@@ -12,9 +12,8 @@
   .active-view { display: flex !important; }
   #mainContent { flex: 1; padding: 15px; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 140px; }
   
-  /* IMAGE & GIF STYLING */
   .hole-img { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border); background: #222; display: none; }
-  .welcome-img { width: 100%; max-width: 320px; height: auto; border-radius: 20px; margin-bottom: 20px; border: 2px solid var(--primary); box-shadow: 0 0 20px rgba(76, 175, 80, 0.4); }
+  .welcome-img { width: 100%; max-width: 320px; height: auto; border-radius: 20px; margin-bottom: 20px; border: 2px solid var(--primary); box-shadow: 0 0 25px rgba(76, 175, 80, 0.5); display: block; margin-left: auto; margin-right: auto; }
 
   .top-info-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #000; border-bottom: 1px solid #333; flex-shrink: 0; width: 100%; }
   .room-tag { font-family: monospace; font-weight: bold; color: var(--accent); font-size: 18px; }
@@ -23,18 +22,25 @@
   .hole-jump-select { width: 100%; padding: 15px; background: #222; color: var(--primary); border: 1px solid #444; border-radius: 10px; font-weight: bold; margin-bottom: 12px; font-size: 1.1rem; text-align-last: center; appearance: none; -webkit-appearance: none; }
   .btn-share-top { background: var(--blue); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 11px; margin-right: 5px; }
   .btn-whatsapp { background: var(--whatsapp); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 11px; }
+  
   #leaderboardDrawer { position: absolute; bottom: 0; left: 0; width: 100%; height: 88%; background: #1a1a1a; border-top: 4px solid var(--primary); border-top-left-radius: 25px; border-top-right-radius: 25px; z-index: 2000; transition: transform 0.4s cubic-bezier(0.1, 0.7, 0.1, 1); transform: translateY(105%); display: flex; flex-direction: column; }
   #leaderboardDrawer.open { transform: translateY(0); }
   .ldr-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 15px; }
   .table-scroll { width: 100%; overflow-x: auto; margin-top: 15px; background: #000; border-radius: 12px; }
+  
+  table { width: 100%; border-collapse: collapse; font-size: 11px; color: white; }
+  th, td { border: 1px solid #333; padding: 10px; text-align: center; min-width: 80px; }
+  th:first-child, td:first-child { position: sticky; left: 0; background: #1a1a1a; min-width: 100px; z-index: 10; }
+  .row-drink { background: rgba(33, 150, 243, 0.1) !important; color: #90caf9; }
+  .row-gamble { background: rgba(255, 215, 0, 0.1) !important; color: #fff59d; }
+  .row-sundry-total { background: rgba(142, 68, 173, 0.3) !important; color: #d7bde2; font-weight: bold; }
+
+  .detail-box { text-align: left; padding: 15px; border-radius: 10px; margin-top: 10px; font-size: 14px; border: 1px solid var(--border); background: var(--card); line-height: 1.4; }
   .shame-tag { display: block; font-size: 11px; color: #aaa; margin-top: 4px; padding-left: 10px; border-left: 2px solid var(--purple); }
   .btn-main { background: var(--primary); color: white; border: none; width: 100%; padding: 22px; border-radius: 15px; margin-bottom: 12px; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
   .btn-side { flex: 1; background: #444; color: white; border: none; padding: 18px; border-radius: 12px; font-weight: bold; font-size: 0.9rem; text-align: center; display: flex; align-items: center; justify-content: center; text-decoration: none; }
   input { width: 100%; max-width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #444; background: #222; color: #fff; margin-bottom: 10px; text-align: center; font-size: 1.1rem; }
   .floating-toggle { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 18px 45px; border-radius: 50px; font-weight: bold; box-shadow: 0 8px 20px rgba(0,0,0,0.6); z-index: 1500; border: 2px solid #fff; }
-  table { width: 100%; border-collapse: collapse; font-size: 11px; color: white; }
-  th, td { border: 1px solid #333; padding: 10px; text-align: center; min-width: 150px; }
-  .admin-item { background: #252525; padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
 </style>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -42,8 +48,8 @@
 <body>
 
   <div id="authView" class="view active-view" style="justify-content: center; align-items: center; text-align: center; padding: 20px;">
-    <img src="img/welcome.gif" class="welcome-img" onload="this.style.display='block'" onerror="this.src='img/welcome.jpg'; this.onerror=function(){this.style.display='none'};">
-    <h1 style="color:var(--primary); font-size: 2rem; margin-bottom: 30px;">⛳ JK’S BUCKS 2026</h1>
+    <img src="img/welcome.gif" class="welcome-img" id="welcomePic" onerror="this.src='img/welcome.jpg'; this.onerror=function(){this.style.display='none'};">
+    <h1 style="color:var(--primary); font-size: 2.2rem; margin-bottom: 30px;">⛳ JK’S BUCKS 2026</h1>
     <input type="text" id="logUser" placeholder="Your Name">
     <input type="password" id="logPass" placeholder="Password">
     <button class="btn-main" onclick="handleAuth()">Login / Create Account</button>
@@ -71,14 +77,11 @@
   </div>
 
   <div id="adminView" class="view" style="padding: 20px;">
-    <h2 style="color:var(--purple);">System Admin Panel</h2>
+    <h2 style="color:var(--purple);">Admin Panel</h2>
     <button class="btn-main" style="background:#444;" onclick="v('adminView', 0); v('dashView', 1);">Dashboard</button>
-    <div style="background: #3d1414; padding: 15px; border-radius: 12px; border: 2px solid var(--danger); margin-bottom: 20px;">
-      <h4 style="margin:0; color:var(--danger);">Nuclear Option</h4>
-      <button class="btn-main" style="background:var(--danger); padding:10px; font-size:14px; margin-top:10px;" onclick="globalReset()">WIPE ALL DATA</button>
-    </div>
-    <h3>Users</h3><div id="adminUserList"></div>
-    <h3>Games</h3><div id="adminGameList"></div>
+    <div id="adminUserList"></div>
+    <div id="adminGameList"></div>
+    <button class="btn-main" style="background:var(--danger); margin-top:20px;" onclick="globalReset()">WIPE ALL DATA</button>
   </div>
 
   <div id="gameView" class="view" style="padding: 0;">
@@ -132,9 +135,25 @@
                 <div style="display:flex; gap:5px; margin-top:15px;"><input type="text" id="newFellaName" placeholder="Mate's Name" style="flex:1; height:45px; font-size:14px; margin:0;"><button style="background:var(--primary); border:none; color:white; padding:0 15px; border-radius:10px; font-weight:bold; height:45px;" onclick="addFella()">ADD FELLA</button></div>
                 <button class="btn-main" style="background: #555; font-size: 12px; margin-top: 15px; padding: 10px;" onclick="archiveGame()">🛑 ARCHIVE GAME</button>
             </div>
-            <div style="display:flex; gap:10px;"><a href="https://www.google.com/maps/search/?api=1&query=Park+MGM+Las+Vegas" target="_blank" class="btn-side" style="background:#ea4335;">🚀 Front 9</a><a href="https://www.google.com/maps/search/?api=1&query=Wynn+Las+Vegas" target="_blank" class="btn-side" style="background:#fbbc05;">🚀 Back 9</a></div>
+            
+            <div style="display:flex; gap:10px; margin-top:10px;"><a href="https://www.google.com/maps/dir/Park+MGM,+Las+Vegas+Blvd+S,+Las+Vegas,+NV/The+Chandelier,+Las+Vegas+Blvd+S,+Las+Vegas,+NV/Caesars+Palace,+Las+Vegas+Blvd+S,+Las+Vegas,+NV" target="_blank" class="btn-side" style="background:#ea4335;">🚀 Front 9 Map</a><a href="https://www.google.com/maps/dir/Wynn+Las+Vegas/Peppermill+Restaurant/Fremont+Street+Experience/Circa+Resort+%26+Casino" target="_blank" class="btn-side" style="background:#fbbc05;">🚀 Back 9 Map</a></div>
         </div>
-        <div id="leaderboardDrawer"><div class="top-info-bar" style="border-radius: 25px 25px 0 0;"><button class="btn-whatsapp" onclick="copySummary()">WHATSAPP SUMMARY 📊</button><button onclick="toggleLdr(false)" style="background:var(--danger); color:white; border:none; padding:8px 15px; border-radius:12px;">Close</button></div><div class="ldr-body"><div id="pList"></div><div class="table-scroll"><table><thead id="tHead"></thead><tbody id="tBody"></tbody></table></div></div></div>
+
+        <div id="leaderboardDrawer">
+          <div class="top-info-bar" style="border-radius: 25px 25px 0 0;">
+            <button class="btn-whatsapp" onclick="copySummary()">WHATSAPP SUMMARY 📊</button>
+            <button onclick="toggleLdr(false)" style="background:var(--danger); color:white; border:none; padding:8px 15px; border-radius:12px;">Close</button>
+          </div>
+          <div class="ldr-body">
+            <div id="pList"></div>
+            <div class="table-scroll">
+              <table id="fullScorecard">
+                <thead id="tHead"></thead>
+                <tbody id="tBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
         <div class="floating-toggle" onclick="toggleLdr(true)">🏆 SCORES</div>
     </div>
   </div>
@@ -155,7 +174,8 @@
     });
   }
   function loginSuccess() { localStorage.setItem('jk_user', user.name); v('authView', 0); v('dashView', 1); document.getElementById('dashTitle').innerText = `G'day, ${user.name}`; if(user.name === "Admin") document.getElementById('adminBtn').style.display = 'block'; loadDashboard(); }
-  function loadDashboard() { db.ref(`users/${user.name}/games`).on('value', snap => { const alist = document.getElementById('activeList'), hlist = document.getElementById('historyList'); alist.innerHTML = ''; hlist.innerHTML = ''; snap.forEach(g => { const data = g.val(); if(data.status === 'active') alist.innerHTML += `<div style="background:var(--card); padding:15px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;"><span>${data.code}</span><button onclick="enterGame('${data.code}')" style="background:var(--primary); color:#fff; border:none; padding:8px 12px; border-radius:5px;">Resume</button></div>`; else hlist.innerHTML += `<div style="background:var(--card); padding:15px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;"><span>${data.code}</span><button onclick="enterGame('${data.code}')" style="background:#555; color:#fff; border:none; padding:8px 12px; border-radius:5px;">History</button></div>`; }); }); }
+  function loadDashboard() { db.ref(`users/${user.name}/games`).on('value', snap => { const alist = document.getElementById('activeList'), hlist = document.getElementById('historyList'); alist.innerHTML = ''; hlist.innerHTML = ''; snap.forEach(g => { const data = g.val(); const item = `<div style="background:var(--card); padding:15px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;"><span>${data.code}</span><button onclick="enterGame('${data.code}')" style="background:var(--primary); color:#fff; border:none; padding:8px 12px; border-radius:5px;">Resume</button></div>`; if(data.status === 'active') alist.innerHTML += item; else hlist.innerHTML += item; }); }); }
+  
   function enterGame(code) {
     gCode = code; viewTarget = user.name; v('dashView', 0); v('gameView', 1); document.getElementById('roomTag').innerText = gCode;
     db.ref(`games/${gCode}/players/${user.name}`).update({ name: user.name, drinkTotal: 0, gambleTotal: 0, sundryTotal: 0 });
@@ -163,28 +183,32 @@
         const data = snap.val(); if(!data) { exitGame(); return; }
         if(data.host === user.name) document.getElementById('hostPanel').style.display = 'block';
         currentPlayers = Object.values(data.players || {}).sort((a,b) => ((a.drinkTotal||0)+(a.gambleTotal||0)+(a.sundryTotal||0)) - ((b.drinkTotal||0)+(b.gambleTotal||0)+(b.sundryTotal||0)));
+        
+        // Render Scores Drawer
         const list = document.getElementById('pList'); list.innerHTML = '';
         currentPlayers.forEach((p, i) => {
           let wall = ''; (p.shameLog || []).forEach(sh => wall += `<span class="shame-tag">+${sh.amt}: ${sh.reason}</span>`);
           list.innerHTML += `<div style="background:var(--card); padding:15px; border-radius:10px; margin-bottom:10px; border-left:6px solid ${p.name===user.name?'var(--primary)':'var(--border)'}"><div style="display:flex; justify-content:space-between;"><span>${i===0?'👑 ':''}${p.name}</span><b>${(p.drinkTotal||0)+(p.gambleTotal||0)+(p.sundryTotal||0)}</b></div>${wall}</div>`;
         });
+
+        // Render Scorecard Table
+        const head = document.getElementById('tHead'); let headH = '<tr><th>Hole</th>'; currentPlayers.forEach(p => headH += `<th>${p.name}</th>`); head.innerHTML = headH + '</tr>';
+        const body = document.getElementById('tBody'); body.innerHTML = '';
+        for(let i=0; i<18; i++) {
+            let rD = `<tr class="row-drink"><td>H${i+1} Drink</td>`, rG = `<tr class="row-gamble"><td>H${i+1} Gamble</td>`;
+            currentPlayers.forEach(p => { const h = (p.holes && p.holes[i]) ? p.holes[i] : {d:0, g:0}; rD += `<td>${h.d||0}</td>`; rG += `<td>${h.g||0}</td>`; });
+            body.innerHTML += rD + '</tr>' + rG + '</tr>';
+        }
+        let rST = `<tr class="row-sundry-total"><td>TOTAL SUNDRIES</td>`; currentPlayers.forEach(p => rST += `<td>${p.sundryTotal||0}</td>`); body.innerHTML += rST + '</tr>';
+
+        // Update dropdown selectors
+        const sel = document.getElementById('activeUserSelect'); const prev = sel.value; sel.innerHTML = ''; currentPlayers.forEach(p => sel.innerHTML += `<option value="${p.name}">${p.name === user.name ? 'ME' : p.name}</option>`); sel.value = prev || viewTarget;
+        const pSel = document.getElementById('pSelect'); const pPrev = pSel.value; pSel.innerHTML = ''; currentPlayers.forEach(p => pSel.innerHTML += `<option value="${p.name}">${p.name}</option>`); pSel.value = pPrev;
         updateGroupStats();
     });
     renderHole();
   }
-  function loadAdmin() {
-    db.ref('users').on('value', s => {
-      const ulist = document.getElementById('adminUserList'); ulist.innerHTML = '';
-      s.forEach(u => { if(u.key !== "Admin") ulist.innerHTML += `<div class="admin-item"><span>${u.key}</span><button style="background:var(--danger); border:none; color:white; padding:5px 10px; border-radius:5px;" onclick="runDeleteUser('${u.key}')">Delete</button></div>`; });
-    });
-    db.ref('games').on('value', s => {
-      const glist = document.getElementById('adminGameList'); glist.innerHTML = '';
-      s.forEach(g => { glist.innerHTML += `<div class="admin-item"><span>${g.key} (${g.val().status || 'active'})</span><button style="background:var(--danger); border:none; color:white; padding:5px 10px; border-radius:5px;" onclick="runDeleteGame('${g.key}')">Delete</button></div>`; });
-    });
-  }
-  function runDeleteUser(n) { if(confirm(`Delete ${n}?`)) db.ref(`users/${n}`).remove(); }
-  function runDeleteGame(c) { if(confirm(`Delete ${c}?`)) db.ref(`games/${c}`).remove(); }
-  function globalReset() { if(!confirm("Wipe everything but Admin?")) return; db.ref('games').remove(); db.ref('users').once('value', s => s.forEach(u => { if(u.key !== "Admin") db.ref(`users/${u.key}`).remove(); })); alert("System Cleared."); }
+
   function adjHostSundry(a) { hSundry += a; document.getElementById('hostSundryDisp').innerText = hSundry; }
   function applyHostSundry() { 
     const tId = document.getElementById('pSelect').value, reason = document.getElementById('sundryReason').value.trim() || "Penalty";
@@ -197,7 +221,6 @@
   function applyMassPenalty(amt, reason) { currentPlayers.forEach(p => { let log = p.shameLog || []; log.push({amt: amt, reason: reason}); db.ref(`games/${gCode}/players/${p.name}`).update({ sundryTotal: (p.sundryTotal || 0) + amt, shameLog: log }); }); }
   function switchUser(n) { viewTarget = n; renderHole(); }
   function addFella() { const n = document.getElementById('newFellaName').value.trim(); if(!n) return; db.ref(`games/${gCode}/players/${n}`).set({ name: n, drinkTotal: 0, gambleTotal: 0, sundryTotal: 0 }); document.getElementById('newFellaName').value = ''; }
-  
   function renderHole() { 
     const h = course[cIdx]; document.getElementById('holeJump').value = cIdx; 
     document.getElementById('holeImgDisplay').src = 'img/' + (cIdx+1) + '.jpg';
@@ -211,15 +234,14 @@
   function updateGroupStats() { if(!currentPlayers.length) return; const totalDrinks = currentPlayers.reduce((sum, p) => sum + (p.drinkTotal || 0), 0); const mvp = [...currentPlayers].sort((a,b) => (b.sundryTotal||0) - (a.sundryTotal||0))[0]; document.getElementById('statsContent').innerHTML = `<b>Group Avg Drinks:</b> ${(totalDrinks / currentPlayers.length).toFixed(1)}<br><b>Sundry King:</b> ${mvp.name} (${mvp.sundryTotal})`; }
   function copySummary() { let s = `⛳ JK'S BUCKS TOTALS:\n\n`; currentPlayers.forEach((p, i) => s += `${i+1}. ${p.name}: ${(p.drinkTotal||0)+(p.gambleTotal||0)+(p.sundryTotal||0)}\n`); s += `\n🔗 Live: https://www.033.eu`; const el = document.createElement('textarea'); el.value = s; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); alert("Summary Copied!"); }
   function shareCode() { const text = `Join JK's Bucks Night! \nCode: ${gCode} \n\nPlay: https://www.033.eu`; if (navigator.share) navigator.share({ title: "JK's Vegas", text: text }); else alert("Copy & Share:\n" + text); }
-  function archiveGame() { if(!confirm("Archive?")) return; db.ref(`games/${gCode}/status`).set('archived'); db.ref(`games/${gCode}/players`).once('value', s => s.forEach(p => db.ref(`users/${p.key}/games/${gCode}/status`).set('archived'))); }
-  function saveHole() { if(cIdx < 17) { cIdx++; renderHole(); } else alert("Last hole saved!"); }
-  function jumpHole(i) { cIdx = parseInt(i); renderHole(); }
-  function toggleLdr(open) { document.getElementById('leaderboardDrawer').classList.toggle('open', open); }
-  function v(id, s) { document.getElementById(id).style.display = s ? 'flex' : 'none'; }
   function exitGame() { v('gameView', 0); v('dashView', 1); gCode = null; }
   function logout() { localStorage.clear(); location.reload(); }
   function createGame() { gCode = Math.random().toString(36).substring(2, 6).toUpperCase(); db.ref(`games/${gCode}`).set({ code: gCode, host: user.name, status: 'active' }).then(() => { db.ref(`users/${user.name}/games/${gCode}`).set({code: gCode, status: 'active'}); enterGame(gCode); }); }
   function joinGame() { const c = document.getElementById('newRoomCode').value.trim().toUpperCase(); db.ref(`games/${c}`).once('value', s => { if(!s.exists()) return alert("Room not found"); db.ref(`users/${user.name}/games/${c}`).set({code: c, status: 'active'}); enterGame(c); }); }
+  function saveHole() { if(cIdx < 17) { cIdx++; renderHole(); } else alert("Last hole saved!"); }
+  function jumpHole(i) { cIdx = parseInt(i); renderHole(); }
+  function toggleLdr(open) { document.getElementById('leaderboardDrawer').classList.toggle('open', open); }
+  function v(id, s) { document.getElementById(id).style.display = s ? 'flex' : 'none'; }
 
   course.forEach((h, i) => { 
     document.getElementById('holeJump').innerHTML += `<option value="${i}">Hole ${i+1}</option>`; 
