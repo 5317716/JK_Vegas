@@ -26,7 +26,8 @@
   .room-tag { font-family: monospace; font-weight: bold; color: var(--accent); font-size: 18px; }
   .btn-share-top { background: var(--blue); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 12px; }
 
-  /* SCROLLABLE DRAWER FIX */
+  .hole-jump-select { width: 100%; padding: 15px; background: #222; color: var(--primary); border: 1px solid #444; border-radius: 10px; font-weight: bold; margin-bottom: 12px; font-size: 16px; text-align-last:center; }
+
   #leaderboardDrawer { 
     position: absolute; bottom: 0; left: 0; width: 100%; height: 88%; 
     background: #1a1a1a; border-top: 4px solid var(--primary); 
@@ -37,22 +38,13 @@
   }
   #leaderboardDrawer.open { transform: translateY(0); }
 
-  .ldr-body { 
-    flex: 1; 
-    overflow-y: auto !important; 
-    -webkit-overflow-scrolling: touch; 
-    padding: 15px; 
-    padding-bottom: 50px;
-  }
+  .ldr-body { flex: 1; overflow-y: auto !important; -webkit-overflow-scrolling: touch; padding: 15px; padding-bottom: 50px; }
 
-  .table-scroll { 
-    width: 100%; 
-    overflow-x: auto !important; 
-    margin-top: 15px; 
-    background: #000; 
-    border-radius: 12px;
-    -webkit-overflow-scrolling: touch;
-  }
+  .table-scroll { width: 100%; overflow-x: auto !important; margin-top: 15px; background: #000; border-radius: 12px; -webkit-overflow-scrolling: touch; }
+
+  /* SCORECARD COLOURS */
+  .row-drink { background: rgba(33, 150, 243, 0.15) !important; color: #90caf9; }
+  .row-gamble { background: rgba(255, 215, 0, 0.1) !important; color: #fff59d; }
 
   .hole-header { background: var(--card); padding: 18px; border-radius: 12px; margin-bottom: 12px; border-top: 5px solid var(--primary); text-align: center; }
   .hole-title { font-weight: bold; font-size: 1.5rem; color: var(--primary); }
@@ -76,7 +68,7 @@
   .floating-toggle { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 18px 45px; border-radius: 50px; font-weight: bold; box-shadow: 0 8px 20px rgba(0,0,0,0.6); z-index: 1500; border: 2px solid #fff; }
 
   table { width: 100%; border-collapse: collapse; font-size: 11px; color: white; }
-  th, td { border: 1px solid #333; padding: 10px; text-align: center; min-width: 95px; }
+  th, td { border: 1px solid #333; padding: 10px; text-align: center; min-width: 110px; }
   th { background: #222; color: var(--primary); }
 
   #hostPanel { display:none; background:#3d1414; padding:15px; border-radius:12px; border: 2px solid var(--danger); margin-bottom: 15px; }
@@ -149,8 +141,8 @@
 
             <button class="btn-main" style="background:#444;" onclick="v('rulesView',1)">📜 THE RULES & GUIDE</button>
             <div style="display:flex; gap:10px;">
-                <a href="https://maps.google.com/?q=Park+MGM" target="_blank" class="btn-side" style="background:#ea4335;">🚀 Front 9 GPS</a>
-                <a href="https://maps.google.com/?q=Fremont+Street+Experience" target="_blank" class="btn-side" style="background:#fbbc05;">🚀 Back 9 GPS</a>
+                <a href="https://www.google.com/maps/search/?api=1&query=Park+MGM+Las+Vegas" target="_blank" class="btn-side" style="background:#ea4335;">🚀 Front 9 GPS</a>
+                <a href="https://www.google.com/maps/search/?api=1&query=Fremont+Street+Experience" target="_blank" class="btn-side" style="background:#fbbc05;">🚀 Back 9 GPS</a>
             </div>
             <button style="background:none; border:none; color:#444; padding: 25px; width:100%; font-size: 12px;" onclick="leave()">Reset Session</button>
         </div>
@@ -173,7 +165,7 @@
     <button class="btn-main" onclick="v('rulesView',0)">Back to Game</button>
     <div class="detail-box"><b>🍺 Drink Par:</b> Sips to finish.<br><b>💵 Gambling Par ($10 Buy-in):</b><br>Birdie (-1): Profit | Par (0): Break Even | Bogey (+1): Loss | Penalty (+3): Refusal</div>
     <div class="detail-box" style="border-color: var(--accent);"><b>👑 THE "JOEL" ODD-NUMBER RULE:</b> Odd number of players? Joel finds a stranger for his coin flip.</div>
-    <div class="detail-box" style="border-color: var(--danger);"><b>HAZARDS & PENALTIES:</b><br>• <b>Hole 10 Backup:</b> No pickle juice at Wynn? Order beer with olive brine splash.<br>• <b>The Curdle (+2):</b> Hesitating on Car Bomb.<br>• <b>Vomiting (+3):</b> Out of Bounds.</div>
+    <div class="detail-box" style="border-color: var(--danger);"><b>HAZARDS & PENALTIES:</b><br>• <b>The Curdle (+2):</b> Hesitating on Car Bomb.<br>• <b>Vomiting (+3):</b> Out of Bounds.</div>
     <h2 style="color:var(--primary); margin-top:20px;">COURSE GUIDE</h2>
     <div id="oList"></div>
   </div>
@@ -245,7 +237,8 @@
       const head = document.getElementById('tHead'); let headH = '<tr><th>Hole</th>'; allPlayers.forEach(p => { headH += `<th>${p.name}</th>`; }); head.innerHTML = headH + '</tr>';
       const body = document.getElementById('tBody'); body.innerHTML = '';
       for(let i=0; i<18; i++) {
-          let rowD = `<tr><td>H${i+1}D</td>`; let rowG = `<tr><td>H${i+1}G</td>`;
+          let rowD = `<tr class="row-drink"><td>Hole ${i+1} Drinking</td>`; 
+          let rowG = `<tr class="row-gamble"><td>Hole ${i+1} Gambling</td>`;
           allPlayers.forEach(p => { const holeData = (p.holes && p.holes[i]) ? p.holes[i] : {d:0, g:0}; rowD += `<td>${holeData.d||0}</td>`; rowG += `<td>${holeData.g||0}</td>`; });
           body.innerHTML += rowD + '</tr>' + rowG + '</tr>';
       }
@@ -278,7 +271,7 @@
   function toggleLdr(open) { document.getElementById('leaderboardDrawer').classList.toggle('open', open); }
   function v(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
   function leave() { if(confirm("Clear session?")) { localStorage.clear(); location.reload(); } }
-  function shareCode() { const text = `Join JK's Bucks Night! Code: ${gCode} \n\nPlay here: vegas.yourdomain.com`; if (navigator.share) navigator.share({ title: "JK's Vegas", text: text, url: "https://vegas.yourdomain.com" }); else alert("Code: " + gCode); }
+  function shareCode() { const text = `Join JK's Bucks Night! Code: ${gCode} \n\nPlay here: https://vegas.yourdomain.com`; if (navigator.share) navigator.share({ title: "JK's Vegas", text: text, url: "https://vegas.yourdomain.com" }); else alert("Code: " + gCode); }
 
   course.forEach((h, i) => document.getElementById('oList').innerHTML += `<div class="detail-box"><b>Hole ${i+1}: ${h.t}</b><p>🍺 ${h.di}<br>🎲 ${h.gi}</p></div>`);
   if(mId && gCode) db.ref(`games/${gCode}/players/${mId}`).once('value', s => { if(s.exists()) start(); else leave(); });
