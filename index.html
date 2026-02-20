@@ -7,7 +7,6 @@
 <style>
   :root { --primary: #4CAF50; --bg: #121212; --card: #1e1e1e; --text: #ffffff; --border: #333; --danger: #f44336; --accent: #FFD700; --blue: #2196F3; --purple: #8e44ad; }
   
-  /* THE FIX: Ensure padding doesn't push elements off-screen */
   * { box-sizing: border-box; }
 
   html, body { 
@@ -24,7 +23,6 @@
   .app-container { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
   #mainContent { flex: 1; padding: 15px; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 140px; }
 
-  /* NAVIGATION & TOP BARS */
   .top-info-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #000; border-bottom: 1px solid #333; flex-shrink: 0; width: 100%; }
   .room-tag { font-family: monospace; font-weight: bold; color: var(--accent); font-size: 18px; }
   
@@ -32,10 +30,9 @@
   .btn-logout { background: none; border: 1px solid #444; color: #888; padding: 8px 15px; border-radius: 8px; font-size: 14px; white-space: nowrap; }
 
   .hole-jump-select { width: 100%; padding: 15px; background: #222; color: var(--primary); border: 1px solid #444; border-radius: 10px; font-weight: bold; margin-bottom: 12px; font-size: 1.1rem; text-align-last: center; appearance: none; -webkit-appearance: none; }
+  .btn-share-top { background: var(--blue); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 11px; margin-right: 5px; }
+  .btn-whatsapp { background: #25D366; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 11px; }
 
-  .btn-share-top { background: var(--blue); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 12px; margin-right: 5px; }
-
-  /* LEADERBOARD DRAWER */
   #leaderboardDrawer { 
     position: absolute; bottom: 0; left: 0; width: 100%; height: 88%; 
     background: #1a1a1a; border-top: 4px solid var(--primary); 
@@ -44,11 +41,9 @@
     transform: translateY(105%); display: flex; flex-direction: column;
   }
   #leaderboardDrawer.open { transform: translateY(0); }
-
   .ldr-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 15px; }
   .table-scroll { width: 100%; overflow-x: auto; margin-top: 15px; background: #000; border-radius: 12px; -webkit-overflow-scrolling: touch; }
 
-  /* SCORECARD TABLES */
   .row-drink { background: rgba(33, 150, 243, 0.1) !important; color: #90caf9; }
   .row-gamble { background: rgba(255, 215, 0, 0.08) !important; color: #fff59d; }
 
@@ -60,7 +55,6 @@
   .floating-toggle { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 18px 45px; border-radius: 50px; font-weight: bold; box-shadow: 0 8px 20px rgba(0,0,0,0.6); z-index: 1500; border: 2px solid #fff; }
   table { width: 100%; border-collapse: collapse; font-size: 11px; color: white; }
   th, td { border: 1px solid #333; padding: 10px; text-align: center; min-width: 140px; }
-
   .admin-item { background: #252525; padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
 </style>
 
@@ -96,19 +90,13 @@
 
   <div id="adminView" class="view" style="padding: 20px;">
     <h2 style="color:var(--purple);">Admin Panel</h2>
-    <button class="btn-main" style="background:#444;" onclick="v('adminView', 0); v('dashView', 1);">Back to Dashboard</button>
-    
+    <button class="btn-main" style="background:#444;" onclick="v('adminView', 0); v('dashView', 1);">Dashboard</button>
     <div style="background: #3d1414; padding: 15px; border-radius: 12px; border: 2px solid var(--danger); margin-bottom: 20px;">
       <h4 style="margin:0; color:var(--danger);">Nuclear Option</h4>
-      <p style="font-size:11px; color:#ccc;">Wipes all users (except Admin) and all game data.</p>
-      <button class="btn-main" style="background:var(--danger); padding:10px; font-size:14px;" onclick="globalReset()">WIPE ALL DATA</button>
+      <button class="btn-main" style="background:var(--danger); padding:10px; font-size:14px; margin-top:10px;" onclick="globalReset()">WIPE ALL DATA</button>
     </div>
-
-    <h3>All Users</h3>
-    <div id="adminUserList"></div>
-    
-    <h3>All Games</h3>
-    <div id="adminGameList"></div>
+    <h3>Users</h3><div id="adminUserList"></div>
+    <h3>Games</h3><div id="adminGameList"></div>
   </div>
 
   <div id="gameView" class="view" style="padding: 0;">
@@ -156,14 +144,14 @@
             </div>
 
             <div style="display:flex; gap:10px;">
-                <a href="https://www.google.com/maps/dir/Encore+at+Wynn+Las+Vegas/Peppermill+Restaurant+and+Fireside+Lounge/Circa+Resort+%26+Casino/Golden+Gate+Hotel+%26+Casino/Golden+Nugget+Las+Vegas+Hotel+%26+Casino/Binion's+Gambling+Hall/" target="_blank" class="btn-side" style="background:#ea4335;">🚀 Front 9</a>
-                <a href="https://www.google.com/maps/search/Park+MGM+Las+Vegas" target="_blank" class="btn-side" style="background:#fbbc05;">🚀 Back 9</a>
+                <a href="https://www.google.com/maps/dir/Park+MGM/The+Cosmopolitan+of+Las+Vegas/Caesars+Palace/The+Linq+Hotel/Wynn+Las+Vegas" target="_blank" class="btn-side" style="background:#ea4335;">🚀 Front 9 GPS</a>
+                <a href="https://www.google.com/maps/dir/Wynn+Las+Vegas/Peppermill+Restaurant+and+Fireside+Lounge/Fremont+Street+Experience/Circa+Resort+%26+Casino/Golden+Gate+Hotel+%26+Casino/Golden+Nugget+Las+Vegas/Binion's+Gambling+Hall" target="_blank" class="btn-side" style="background:#fbbc05;">🚀 Back 9 GPS</a>
             </div>
         </div>
         
         <div id="leaderboardDrawer">
             <div class="top-info-bar" style="border-radius: 25px 25px 0 0;">
-                <span style="font-weight:bold; color:var(--primary);">🏆 SCORES</span>
+                <button class="btn-whatsapp" onclick="copySummary()">WHATSAPP SUMMARY 📊</button>
                 <button onclick="toggleLdr(false)" style="background:var(--danger); color:white; border:none; padding:8px 15px; border-radius:12px;">Close</button>
             </div>
             <div class="ldr-body"><div id="pList"></div><div class="table-scroll"><table><thead id="tHead"></thead><tbody id="tBody"></tbody></table></div></div>
@@ -180,25 +168,25 @@
   const course = [
     { t: "1. BetMGM Bar", l: "Park MGM", p: 4, di: "Pint of Lager/IPA", gi: "Roulette: Bet $10 on Red." },
     { t: "2. Mama Rabbit", l: "Park MGM", p: 1, di: "Tequila Shot", gi: "Pokies: Two $5 spins." },
-    { t: "3. The Fairway", l: "Walk to Cosmo", p: 5, di: "Margarita Yard Glass", gi: "Coin Flip: $10 Heads/Tails." },
+    { t: "3. Cosmo Walk", l: "The Fairway", p: 5, di: "Margarita Yard Glass", gi: "Coin Flip: $10 Heads/Tails." },
     { t: "4. Casino Floor", l: "Cosmo", p: 3, di: "½ Pint of Beer", gi: "Roulette: $10 Even." },
     { t: "5. Chandelier Bar", l: "Cosmo", p: 1, di: "Lemon Drop Shot", gi: "Video Poker: $10 win/bust." },
     { t: "6. Lobby Bar", l: "Caesars", p: 3, di: "Gin & Tonic", gi: "Baccarat: $10 Player." },
     { t: "7. Sportsbook", l: "Caesars", p: 3, di: "Bottle of Beer", gi: "$10 bet on next team score." },
     { t: "8. Tilted Kilt", l: "The LINQ", p: 1, di: "Irish Car Bomb", gi: "$5 side bet." },
-    { t: "9. The Fairway", l: "Walk to Wynn", p: 5, di: "Colt 45 walk", gi: "Coin Flip: $10 Heads/Tails." },
+    { t: "9. Wynn Walk", l: "The Fairway", p: 5, di: "Colt 45 walk", gi: "Coin Flip: $10 Heads/Tails." },
     { t: "10. Wynn", l: "Parasol Down", p: 3, di: "Dirty PBR (Pickle juice)", gi: "High Limit: $10 one spin." },
     { t: "11. Encore", l: "Lobby Bar", p: 3, di: "Vodka Redbull", gi: "Roulette: $10 Black." },
     { t: "12. Peppermill", l: "Fireside", p: 4, di: "Signature Cocktail", gi: "$10 Video Poker." },
     { t: "13. Fremont St", l: "Walking", p: 4, di: "Vegas Slushie", gi: "No Gamble: Neon show." },
-    { t: "14. Mega Bar", l: "Circa", p: 3, di: "Draft Beer", gi: "Blackjack: Hit soft 17. Can double/split." },
+    { t: "14. Mega Bar", l: "Circa", p: 3, di: "Draft Beer", gi: "Blackjack: Hit soft 17." },
     { t: "15. Bar Prohibition", l: "Golden Gate", p: 1, di: "Shot of Whiskey", gi: "Craps: $10 Field." },
-    { t: "16. Golden Nugget", l: "Casino Floor", p: 3, di: "Vodka Soda", gi: "Roulette: $10 single number." },
-    { t: "17. Golden Nugget", l: "Claude's Bar", p: 4, di: "Old Fashioned", gi: "3-reel machine: Max pull." },
-    { t: "18. Binion's", l: "The Clubhouse", p: 4, di: "Final Pint", gi: "FINALE: Roulette. 50% winnings or $20." }
+    { t: "16. Casino Floor", l: "Golden Nugget", p: 3, di: "Vodka Soda", gi: "Roulette: $10 single number." },
+    { t: "17. Claude's Bar", l: "Golden Nugget", p: 4, di: "Old Fashioned", gi: "3-reel machine: Max pull." },
+    { t: "18. Binion's", l: "Clubhouse", p: 4, di: "Final Pint", gi: "FINALE: Roulette." }
   ];
 
-  let user = null, gCode = null, cIdx = 0;
+  let user = null, gCode = null, cIdx = 0, currentPlayers = [];
 
   function handleAuth() {
     const u = document.getElementById('logUser').value.trim();
@@ -238,24 +226,18 @@
   function loadAdmin() {
     db.ref('users').on('value', s => {
       const ulist = document.getElementById('adminUserList'); ulist.innerHTML = '';
-      s.forEach(u => {
-        if(u.key !== "Admin") ulist.innerHTML += `<div class="admin-item"><span>${u.key}</span><button style="background:var(--danger); border:none; color:white; padding:5px 10px; border-radius:5px;" onclick="if(confirm('Delete user ${u.key}?')) db.ref('users/${u.key}').remove()">Delete</button></div>`;
-      });
+      s.forEach(u => { if(u.key !== "Admin") ulist.innerHTML += `<div class="admin-item"><span>${u.key}</span><button style="background:var(--danger); border:none; color:white; padding:5px 10px; border-radius:5px;" onclick="if(confirm('Delete user ${u.key}?')) db.ref('users/${u.key}').remove()">Delete</button></div>`; });
     });
     db.ref('games').on('value', s => {
       const glist = document.getElementById('adminGameList'); glist.innerHTML = '';
-      s.forEach(g => {
-        glist.innerHTML += `<div class="admin-item"><span>${g.key} (${g.val().status})</span><button style="background:var(--danger); border:none; color:white; padding:5px 10px; border-radius:5px;" onclick="if(confirm('Delete game ${g.key}?')) db.ref('games/${g.key}').remove()">Delete</button></div>`;
-      });
+      s.forEach(g => { glist.innerHTML += `<div class="admin-item"><span>${g.key} (${g.val().status})</span><button style="background:var(--danger); border:none; color:white; padding:5px 10px; border-radius:5px;" onclick="if(confirm('Delete game ${g.key}?')) db.ref('games/${g.key}').remove()">Delete</button></div>`; });
     });
   }
 
   function globalReset() {
-    if(!confirm("NUCLEAR OPTION: Wipes everything except your Admin account. Continue?")) return;
+    if(!confirm("NUCLEAR OPTION: Wipes everything but Admin account. Continue?")) return;
     db.ref('games').remove();
-    db.ref('users').once('value', s => {
-      s.forEach(u => { if(u.key !== "Admin") db.ref(`users/${u.key}`).remove(); });
-    });
+    db.ref('users').once('value', s => { s.forEach(u => { if(u.key !== "Admin") db.ref(`users/${u.key}`).remove(); }); });
     alert("System Cleared.");
   }
 
@@ -283,17 +265,17 @@
     db.ref(`games/${gCode}`).on('value', snap => {
         const data = snap.val(); if(!data || data.status === 'archived') { exitGame(); return; }
         if(data.host === user.name) document.getElementById('hostPanel').style.display = 'block';
-        const ps = Object.values(data.players || {}).sort((a,b) => ((a.drinkTotal||0)+(a.gambleTotal||0)) - ((b.drinkTotal||0)+(b.gambleTotal||0)));
+        currentPlayers = Object.values(data.players || {}).sort((a,b) => ((a.drinkTotal||0)+(a.gambleTotal||0)) - ((b.drinkTotal||0)+(b.gambleTotal||0)));
         const list = document.getElementById('pList'); list.innerHTML = '';
-        ps.forEach((p, i) => list.innerHTML += `<div style="background:var(--card); padding:15px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; border-left:6px solid ${p.name===user.name?'var(--primary)':'var(--border)'}"><span>${i===0?'👑 ':''}${p.name}</span><b>${(p.drinkTotal||0)+(p.gambleTotal||0)}</b></div>`);
-        const head = document.getElementById('tHead'); let headH = '<tr><th>Hole</th>'; ps.forEach(p => headH += `<th>${p.name} (${(p.drinkTotal||0)+(p.gambleTotal||0)})</th>`); head.innerHTML = headH + '</tr>';
+        currentPlayers.forEach((p, i) => list.innerHTML += `<div style="background:var(--card); padding:15px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; border-left:6px solid ${p.name===user.name?'var(--primary)':'var(--border)'}"><span>${i===0?'👑 ':''}${p.name}</span><b>${(p.drinkTotal||0)+(p.gambleTotal||0)}</b></div>`);
+        const head = document.getElementById('tHead'); let headH = '<tr><th>Hole</th>'; currentPlayers.forEach(p => headH += `<th>${p.name} (${(p.drinkTotal||0)+(p.gambleTotal||0)})</th>`); head.innerHTML = headH + '</tr>';
         const body = document.getElementById('tBody'); body.innerHTML = '';
         for(let i=0; i<18; i++) {
             let rD = `<tr class="row-drink"><td>Hole ${i+1} Drink</td>`, rG = `<tr class="row-gamble"><td>Hole ${i+1} Gamble</td>`;
-            ps.forEach(p => { const h = (p.holes && p.holes[i]) ? p.holes[i] : {d:0, g:0}; rD += `<td>${h.d||0}</td>`; rG += `<td>${h.g||0}</td>`; });
+            currentPlayers.forEach(p => { const h = (p.holes && p.holes[i]) ? p.holes[i] : {d:0, g:0}; rD += `<td>${h.d||0}</td>`; rG += `<td>${h.g||0}</td>`; });
             body.innerHTML += rD + '</tr>' + rG + '</tr>';
         }
-        const sel = document.getElementById('pSelect'); sel.innerHTML = ''; ps.forEach(p => sel.innerHTML += `<option value="${p.name}">${p.name}</option>`);
+        const sel = document.getElementById('pSelect'); sel.innerHTML = ''; currentPlayers.forEach(p => sel.innerHTML += `<option value="${p.name}">${p.name}</option>`);
     });
     renderHole();
   }
@@ -325,9 +307,19 @@
     });
   }
 
+  function copySummary() {
+    let summary = `⛳ JK'S BUCKS NIGHT TOTALS (Hole ${cIdx+1}):\n\n`;
+    currentPlayers.forEach((p, i) => {
+      summary += `${i+1}. ${p.name}: ${(p.drinkTotal||0)+(p.gambleTotal||0)}\n`;
+    });
+    summary += `\n🔗 Live: https://www.033.eu`;
+    const el = document.createElement('textarea'); el.value = summary; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
+    alert("WhatsApp Summary Copied! Paste it in the group chat.");
+  }
+
   function shareCode() { 
-    const text = `Join JK's Bucks Night Room! \nRoom Code: ${gCode} \n\nPlay here: https://vegas.033.eu`; 
-    if (navigator.share) { navigator.share({ title: "JK's Vegas", text: text, url: "https://vegas.033.eu" }); } else { alert("Copy & Share:\n" + text); }
+    const text = `Join JK's Bucks Night Room! \nRoom Code: ${gCode} \n\nPlay here: https://www.033.eu`; 
+    if (navigator.share) { navigator.share({ title: "JK's Vegas", text: text, url: "https://www.033.eu" }); } else { alert("Copy & Share:\n" + text); }
   }
 
   function archiveGame() { if(!confirm("Archive?")) return; db.ref(`games/${gCode}/status`).set('archived'); db.ref(`games/${gCode}/players`).once('value', s => { s.forEach(p => db.ref(`users/${p.key}/games/${gCode}/status`).set('archived')); }); }
