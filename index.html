@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>JK’s Bucks Night 2026</title>
 <style>
-  :root { --primary: #4CAF50; --bg: #121212; --card: #1e1e1e; --text: #ffffff; --border: #333; --danger: #f44336; --accent: #FFD700; --blue: #2196F3; --purple: #8e44ad; }
+  :root { --primary: #4CAF50; --bg: #121212; --card: #1e1e1e; --text: #ffffff; --border: #333; --danger: #f44336; --accent: #FFD700; --blue: #2196F3; --purple: #8e44ad; --whatsapp: #25D366; }
   
   * { box-sizing: border-box; }
 
@@ -31,7 +31,7 @@
 
   .hole-jump-select { width: 100%; padding: 15px; background: #222; color: var(--primary); border: 1px solid #444; border-radius: 10px; font-weight: bold; margin-bottom: 12px; font-size: 1.1rem; text-align-last: center; appearance: none; -webkit-appearance: none; }
   .btn-share-top { background: var(--blue); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 11px; margin-right: 5px; }
-  .btn-whatsapp { background: #25D366; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 11px; }
+  .btn-whatsapp { background: var(--whatsapp); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 11px; }
 
   #leaderboardDrawer { 
     position: absolute; bottom: 0; left: 0; width: 100%; height: 88%; 
@@ -47,6 +47,7 @@
   .row-drink { background: rgba(33, 150, 243, 0.1) !important; color: #90caf9; }
   .row-gamble { background: rgba(255, 215, 0, 0.08) !important; color: #fff59d; }
 
+  .detail-box { text-align: left; padding: 15px; border-radius: 10px; margin-top: 10px; font-size: 14px; border: 1px solid var(--border); background: var(--card); line-height: 1.4; }
   .btn-main { background: var(--primary); color: white; border: none; width: 100%; padding: 22px; border-radius: 15px; margin-bottom: 12px; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
   .btn-side { flex: 1; background: #444; color: white; border: none; padding: 18px; border-radius: 12px; font-weight: bold; font-size: 0.9rem; text-align: center; display: flex; align-items: center; justify-content: center; text-decoration: none; }
   
@@ -71,10 +72,7 @@
   </div>
 
   <div id="dashView" class="view" style="padding: 20px;">
-    <div class="dash-header">
-        <h2 id="dashTitle" style="margin:0;">G'day</h2>
-        <button class="btn-logout" onclick="logout()">Logout 👋</button>
-    </div>
+    <div class="dash-header"><h2 id="dashTitle" style="margin:0;">G'day</h2><button class="btn-logout" onclick="logout()">Logout 👋</button></div>
     <div id="activeGamesSection">
         <h3 style="color: var(--primary);">Active Games</h3>
         <div id="activeList"></div>
@@ -88,9 +86,28 @@
     <button id="adminBtn" class="btn-main" style="display:none; background:var(--purple); margin-top:30px;" onclick="v('dashView', 0); v('adminView', 1); loadAdmin();">⚙️ SYSTEM ADMIN</button>
   </div>
 
+  <div id="rulesView" class="view" style="padding: 20px;">
+    <h2 style="color:var(--primary);">THE RULES & OVERVIEW</h2>
+    <button class="btn-main" style="background:#444;" onclick="v('rulesView', 0); v('gameView', 1);">Back to Game</button>
+    
+    <div class="detail-box"><b>🍺 Drink Par:</b> Sips/gulps to finish.<br><b>💵 Gambling Par ($10 Buy-in):</b><br>• Birdie (-1): Profit (Win >$10)<br>• Par (0): Break Even ($10)<br>• Bogey (+1): Loss ($0)<br>• Penalty (+3): Refusal</div>
+    
+    <div class="detail-box" style="border-color:var(--accent);"><b>👑 JOEL'S ODD-NUMBER RULE:</b><br>Odd number of players for Fairway coin flips? Joel must find a total stranger on the Strip to take his $10 bet.</div>
+
+    <div class="detail-box" style="border-color:var(--danger);"><b>🚨 HAZARDS & PENALTIES:</b><br>
+      • <b>The Dirty PBR Backup (Hole 10):</b> No pickle juice? Ask for olive brine. Still no? Mandatory Boilermaker (Beer + Whiskey shot).<br>
+      • <b>The Curdle (+2):</b> Hesitating on the Car Bomb.<br>
+      • <b>The Malt Liquor (+2):</b> Entering the Wynn before finishing the Colt 45.<br>
+      • <b>Out of Bounds (+3):</b> Vomiting.
+    </div>
+
+    <h3 style="color:var(--primary); margin-top:25px;">COURSE GUIDE</h3>
+    <div id="fullCourseList"></div>
+  </div>
+
   <div id="adminView" class="view" style="padding: 20px;">
     <h2 style="color:var(--purple);">Admin Panel</h2>
-    <button class="btn-main" style="background:#444;" onclick="v('adminView', 0); v('dashView', 1);">Dashboard</button>
+    <button class="btn-main" style="background:#444;" onclick="v('adminView', 0); v('dashView', 1);">Back to Dashboard</button>
     <div style="background: #3d1414; padding: 15px; border-radius: 12px; border: 2px solid var(--danger); margin-bottom: 20px;">
       <h4 style="margin:0; color:var(--danger);">Nuclear Option</h4>
       <button class="btn-main" style="background:var(--danger); padding:10px; font-size:14px; margin-top:10px;" onclick="globalReset()">WIPE ALL DATA</button>
@@ -132,6 +149,7 @@
             </div>
             
             <button class="btn-main" style="background:var(--blue);" onclick="saveHole()">💾 Save Hole Score</button>
+            <button class="btn-main" style="background:#444;" onclick="v('gameView', 0); v('rulesView', 1);">📜 THE RULES & OVERVIEW</button>
 
             <div id="hostPanel" style="display:none; background:#3d1414; padding:15px; border-radius:12px; border: 2px solid var(--danger); margin-bottom: 15px;">
                 <h3 style="margin-top:0; font-size:12px; color:var(--danger); text-align:center;">🚨 HOST PANEL</h3>
@@ -144,8 +162,8 @@
             </div>
 
             <div style="display:flex; gap:10px;">
-                <a href="https://www.google.com/maps/dir/Park+MGM/The+Cosmopolitan+of+Las+Vegas/Caesars+Palace/The+Linq+Hotel/Wynn+Las+Vegas" target="_blank" class="btn-side" style="background:#ea4335;">🚀 Front 9 GPS</a>
-                <a href="https://www.google.com/maps/dir/Wynn+Las+Vegas/Peppermill+Restaurant+and+Fireside+Lounge/Fremont+Street+Experience/Circa+Resort+%26+Casino/Golden+Gate+Hotel+%26+Casino/Golden+Nugget+Las+Vegas/Binion's+Gambling+Hall" target="_blank" class="btn-side" style="background:#fbbc05;">🚀 Back 9 GPS</a>
+                <a href="https://www.google.com/maps/dir/Park+MGM/Mama+Rabbit/The+Cosmopolitan+of+Las+Vegas/Caesars+Palace/The+LINQ+Hotel/Wynn+Las+Vegas/" target="_blank" class="btn-side" style="background:#ea4335;">🚀 Front 9 GPS</a>
+                <a href="https://www.google.com/maps/dir/Wynn+Las+Vegas/Encore+at+Wynn+Las+Vegas/Peppermill+Restaurant+and+Fireside+Lounge/Fremont+Street+Experience/Circa+Resort+%26+Casino/Golden+Gate+Hotel+%26+Casino/Golden+Nugget+Las+Vegas/Binion's+Gambling+Hall/" target="_blank" class="btn-side" style="background:#fbbc05;">🚀 Back 9 GPS</a>
             </div>
         </div>
         
@@ -168,22 +186,22 @@
   const course = [
     { t: "1. BetMGM Bar", l: "Park MGM", p: 4, di: "Pint of Lager/IPA", gi: "Roulette: Bet $10 on Red." },
     { t: "2. Mama Rabbit", l: "Park MGM", p: 1, di: "Tequila Shot", gi: "Pokies: Two $5 spins." },
-    { t: "3. Cosmo Walk", l: "The Fairway", p: 5, di: "Margarita Yard Glass", gi: "Coin Flip: $10 Heads/Tails." },
-    { t: "4. Casino Floor", l: "Cosmo", p: 3, di: "½ Pint of Beer", gi: "Roulette: $10 Even." },
-    { t: "5. Chandelier Bar", l: "Cosmo", p: 1, di: "Lemon Drop Shot", gi: "Video Poker: $10 win/bust." },
-    { t: "6. Lobby Bar", l: "Caesars", p: 3, di: "Gin & Tonic", gi: "Baccarat: $10 Player." },
-    { t: "7. Sportsbook", l: "Caesars", p: 3, di: "Bottle of Beer", gi: "$10 bet on next team score." },
-    { t: "8. Tilted Kilt", l: "The LINQ", p: 1, di: "Irish Car Bomb", gi: "$5 side bet." },
-    { t: "9. Wynn Walk", l: "The Fairway", p: 5, di: "Colt 45 walk", gi: "Coin Flip: $10 Heads/Tails." },
-    { t: "10. Wynn", l: "Parasol Down", p: 3, di: "Dirty PBR (Pickle juice)", gi: "High Limit: $10 one spin." },
-    { t: "11. Encore", l: "Lobby Bar", p: 3, di: "Vodka Redbull", gi: "Roulette: $10 Black." },
-    { t: "12. Peppermill", l: "Fireside", p: 4, di: "Signature Cocktail", gi: "$10 Video Poker." },
-    { t: "13. Fremont St", l: "Walking", p: 4, di: "Vegas Slushie", gi: "No Gamble: Neon show." },
-    { t: "14. Mega Bar", l: "Circa", p: 3, di: "Draft Beer", gi: "Blackjack: Hit soft 17." },
-    { t: "15. Bar Prohibition", l: "Golden Gate", p: 1, di: "Shot of Whiskey", gi: "Craps: $10 Field." },
-    { t: "16. Casino Floor", l: "Golden Nugget", p: 3, di: "Vodka Soda", gi: "Roulette: $10 single number." },
-    { t: "17. Claude's Bar", l: "Golden Nugget", p: 4, di: "Old Fashioned", gi: "3-reel machine: Max pull." },
-    { t: "18. Binion's", l: "Clubhouse", p: 4, di: "Final Pint", gi: "FINALE: Roulette." }
+    { t: "3. The Fairway", l: "Walk to Cosmo", p: 5, di: "Margarita Yard Glass Buy & Finish", gi: "Coin Flip: $10 Heads/Tails with a mate." },
+    { t: "4. Casino Floor", l: "Cosmopolitan", p: 3, di: "½ Pint of Beer", gi: "Roulette: Bet $10 on Even numbers." },
+    { t: "5. Chandelier Bar", l: "Cosmopolitan", p: 1, di: "Lemon Drop Shot", gi: "Video Poker: Play Jacks or Better ($10)." },
+    { t: "6. Lobby Bar", l: "Caesars Palace", p: 3, di: "Gin & Tonic", gi: "Baccarat: Bet $10 on Player." },
+    { t: "7. Sportsbook", l: "Caesars Palace", p: 3, di: "Bottle of Beer", gi: "Sports: $10 bet on next team score." },
+    { t: "8. Tilted Kilt", l: "The LINQ", p: 1, di: "Irish Car Bomb", gi: "Side Bet: $5 bet on a game decided by Joel." },
+    { t: "9. The Fairway", l: "Walk to Wynn", p: 5, di: "Colt 45 / Steel Reserve", gi: "Coin Flip: $10 Heads/Tails with a mate." },
+    { t: "10. Parasol Down", l: "Wynn", p: 3, di: "Dirty PBR with pickle juice", gi: "Pokies: High Limit $10. One spin." },
+    { t: "11. Lobby Bar", l: "Encore", p: 3, di: "Vodka Redbull", gi: "Roulette: Bet $10 on Black." },
+    { t: "12. Fireside Lounge", l: "Peppermill", p: 4, di: "Signature Cocktail", gi: "Video Poker: Play $10 at the bar." },
+    { t: "13. Fremont Street", l: "Walking", p: 4, di: "Large Vegas Slushie", gi: "No Gamble: Soak in the neon show." },
+    { t: "14. Mega Bar", l: "Circa Resort", p: 3, di: "Draft Beer", gi: "Blackjack: Must hit on soft 17 ($10)." },
+    { t: "15. Bar Prohibition", l: "Golden Gate", p: 1, di: "Shot of Whiskey", gi: "Craps: Place $10 on the Field." },
+    { t: "16. Casino Floor", l: "Golden Nugget", p: 3, di: "Vodka Soda", gi: "Roulette: $10 on a single number." },
+    { t: "17. Claude's Bar", l: "Golden Nugget", p: 4, di: "Old Fashioned", gi: "Pokies: Old-school 3-reel ($10)." },
+    { t: "18. The Clubhouse", l: "Binion's", p: 4, di: "The Final Pint", gi: "FINALE: Roulette - 50% winnings or $20." }
   ];
 
   let user = null, gCode = null, cIdx = 0, currentPlayers = [];
@@ -193,19 +211,13 @@
     const p = document.getElementById('logPass').value.trim();
     if(!u || !p) return alert("Fields required");
     db.ref(`users/${u}`).once('value', s => {
-      if(s.exists()) {
-        if(s.val().pass === p) { user = s.val(); loginSuccess(); }
-        else alert("Wrong password");
-      } else {
-        user = { name: u, pass: p, games: {} };
-        db.ref(`users/${u}`).set(user).then(loginSuccess);
-      }
+      if(s.exists()) { if(s.val().pass === p) { user = s.val(); loginSuccess(); } else alert("Wrong password"); }
+      else { user = { name: u, pass: p, games: {} }; db.ref(`users/${u}`).set(user).then(loginSuccess); }
     });
   }
 
   function loginSuccess() {
-    localStorage.setItem('jk_user', user.name);
-    v('authView', 0); v('dashView', 1);
+    localStorage.setItem('jk_user', user.name); v('authView', 0); v('dashView', 1);
     document.getElementById('dashTitle').innerText = `G'day, ${user.name}`;
     if(user.name === "Admin") document.getElementById('adminBtn').style.display = 'block';
     loadDashboard();
@@ -220,41 +232,6 @@
             const item = `<div style="background:var(--card); padding:15px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;"><span>${data.code}</span><button onclick="enterGame('${data.code}')" style="background:var(--primary); color:#fff; border:none; padding:8px 12px; border-radius:5px;">Resume</button></div>`;
             if(data.status === 'active') alist.innerHTML += item; else hlist.innerHTML += item;
         });
-    });
-  }
-
-  function loadAdmin() {
-    db.ref('users').on('value', s => {
-      const ulist = document.getElementById('adminUserList'); ulist.innerHTML = '';
-      s.forEach(u => { if(u.key !== "Admin") ulist.innerHTML += `<div class="admin-item"><span>${u.key}</span><button style="background:var(--danger); border:none; color:white; padding:5px 10px; border-radius:5px;" onclick="if(confirm('Delete user ${u.key}?')) db.ref('users/${u.key}').remove()">Delete</button></div>`; });
-    });
-    db.ref('games').on('value', s => {
-      const glist = document.getElementById('adminGameList'); glist.innerHTML = '';
-      s.forEach(g => { glist.innerHTML += `<div class="admin-item"><span>${g.key} (${g.val().status})</span><button style="background:var(--danger); border:none; color:white; padding:5px 10px; border-radius:5px;" onclick="if(confirm('Delete game ${g.key}?')) db.ref('games/${g.key}').remove()">Delete</button></div>`; });
-    });
-  }
-
-  function globalReset() {
-    if(!confirm("NUCLEAR OPTION: Wipes everything but Admin account. Continue?")) return;
-    db.ref('games').remove();
-    db.ref('users').once('value', s => { s.forEach(u => { if(u.key !== "Admin") db.ref(`users/${u.key}`).remove(); }); });
-    alert("System Cleared.");
-  }
-
-  function createGame() {
-    gCode = Math.random().toString(36).substring(2, 6).toUpperCase();
-    db.ref(`games/${gCode}`).set({ code: gCode, host: user.name, status: 'active' }).then(() => {
-        db.ref(`users/${user.name}/games/${gCode}`).set({code: gCode, status: 'active'});
-        enterGame(gCode);
-    });
-  }
-
-  function joinGame() {
-    const c = document.getElementById('newRoomCode').value.trim().toUpperCase();
-    db.ref(`games/${c}`).once('value', s => {
-        if(!s.exists()) return alert("Room not found");
-        db.ref(`users/${user.name}/games/${c}`).set({code: c, status: 'active'});
-        enterGame(c);
     });
   }
 
@@ -296,32 +273,15 @@
     });
   }
 
-  function applyPenalty() {
-    const tId = document.getElementById('pSelect').value;
-    const amt = parseInt(document.getElementById('hostAdjVal').value);
-    if(isNaN(amt)) return alert("Enter a number");
-    db.ref(`games/${gCode}/players/${tId}`).once('value', s => {
-        db.ref(`games/${gCode}/players/${tId}`).update({ drinkTotal: (s.val().drinkTotal || 0) + amt });
-        document.getElementById('hostAdjVal').value = '';
-        alert("Applied " + amt + " strokes to " + tId);
-    });
-  }
-
   function copySummary() {
     let summary = `⛳ JK'S BUCKS NIGHT TOTALS (Hole ${cIdx+1}):\n\n`;
-    currentPlayers.forEach((p, i) => {
-      summary += `${i+1}. ${p.name}: ${(p.drinkTotal||0)+(p.gambleTotal||0)}\n`;
-    });
+    currentPlayers.forEach((p, i) => { summary += `${i+1}. ${p.name}: ${(p.drinkTotal||0)+(p.gambleTotal||0)}\n`; });
     summary += `\n🔗 Live: https://www.033.eu`;
     const el = document.createElement('textarea'); el.value = summary; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
-    alert("WhatsApp Summary Copied! Paste it in the group chat.");
+    alert("WhatsApp Summary Copied!");
   }
 
-  function shareCode() { 
-    const text = `Join JK's Bucks Night Room! \nRoom Code: ${gCode} \n\nPlay here: https://www.033.eu`; 
-    if (navigator.share) { navigator.share({ title: "JK's Vegas", text: text, url: "https://www.033.eu" }); } else { alert("Copy & Share:\n" + text); }
-  }
-
+  function shareCode() { const text = `Join JK's Bucks Night Room! \nRoom Code: ${gCode} \n\nPlay here: https://www.033.eu`; if (navigator.share) { navigator.share({ title: "JK's Vegas", text: text }); } else { alert("Copy & Share:\n" + text); } }
   function archiveGame() { if(!confirm("Archive?")) return; db.ref(`games/${gCode}/status`).set('archived'); db.ref(`games/${gCode}/players`).once('value', s => { s.forEach(p => db.ref(`users/${p.key}/games/${gCode}/status`).set('archived')); }); }
   function saveHole() { if(cIdx < 17) { cIdx++; renderHole(); } else alert("Last hole saved!"); }
   function jumpHole(i) { cIdx = parseInt(i); renderHole(); }
@@ -329,8 +289,11 @@
   function v(id, s) { document.getElementById(id).style.display = s ? 'flex' : 'none'; }
   function exitGame() { v('gameView', 0); v('dashView', 1); gCode = null; }
   function logout() { localStorage.clear(); location.reload(); }
-
-  course.forEach((h, i) => document.getElementById('holeJump').innerHTML += `<option value="${i}">Hole ${i+1}</option>`);
+  
+  course.forEach((h, i) => {
+    document.getElementById('holeJump').innerHTML += `<option value="${i}">Hole ${i+1}</option>`;
+    document.getElementById('fullCourseList').innerHTML += `<div class="detail-box"><b>Hole ${i+1}: ${h.t}</b> (${h.l})<br>🍺 ${h.di} (Par ${h.p})<br>🎲 ${h.gi}</div>`;
+  });
   const saved = localStorage.getItem('jk_user'); if(saved) db.ref(`users/${saved}`).once('value', s => { user = s.val(); loginSuccess(); });
 </script>
 </body>
