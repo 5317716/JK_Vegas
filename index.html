@@ -41,6 +41,7 @@
   .btn-side { flex: 1; background: #444; color: white; border: none; padding: 18px; border-radius: 12px; font-weight: bold; font-size: 0.9rem; text-align: center; display: flex; align-items: center; justify-content: center; text-decoration: none; }
   input { width: 100%; max-width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #444; background: #222; color: #fff; margin-bottom: 10px; text-align: center; font-size: 1.1rem; }
   .floating-toggle { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 18px 45px; border-radius: 50px; font-weight: bold; box-shadow: 0 8px 20px rgba(0,0,0,0.6); z-index: 1500; border: 2px solid #fff; }
+  .admin-item { background: #252525; padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
 </style>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -69,6 +70,17 @@
     <button id="adminBtn" class="btn-main" style="display:none; background:var(--purple); margin-top:30px;" onclick="v('dashView', 0); v('adminView', 1); loadAdmin();">⚙️ SYSTEM ADMIN</button>
   </div>
 
+  <div id="adminView" class="view" style="padding: 20px;">
+    <h2 style="color:var(--purple);">System Admin Panel</h2>
+    <button class="btn-main" style="background:#444;" onclick="v('adminView', 0); v('dashView', 1);">Back to Dashboard</button>
+    <div style="background: #3d1414; padding: 15px; border-radius: 12px; border: 2px solid var(--danger); margin-bottom: 20px;">
+      <h4 style="margin:0; color:var(--danger);">Nuclear Option</h4>
+      <button class="btn-main" style="background:var(--danger); padding:10px; font-size:14px; margin-top:10px;" onclick="globalReset()">WIPE ALL DATA</button>
+    </div>
+    <h3>Registered Users</h3><div id="adminUserList"></div>
+    <h3 style="margin-top:20px;">Active Games</h3><div id="adminGameList"></div>
+  </div>
+
   <div id="rulesView" class="view" style="padding: 20px;">
     <h2 style="color:var(--primary);">THE RULES & OVERVIEW</h2>
     <button class="btn-main" style="background:#444;" onclick="v('rulesView', 0); v('gameView', 1);">Back to Game</button>
@@ -76,14 +88,6 @@
     <div class="detail-box" style="border-color:var(--danger);"><b>🚨 COMMISSIONER PENALTIES:</b><br>• <b>The Curdle (+2):</b> Hesitation.<br>• <b>The Malt Liquor (+2):</b> Slow walking.<br>• <b>Out of Bounds (+3):</b> Vomiting.</div>
     <h3 style="color:var(--purple); margin-top:25px;">GROUP STATS</h3><div id="statsContent" class="detail-box" style="background:rgba(142,68,173,0.1); border-color:var(--purple);">Loading stats...</div>
     <h3 style="color:var(--primary); margin-top:25px;">COURSE GUIDE</h3><div id="fullCourseList"></div>
-  </div>
-
-  <div id="adminView" class="view" style="padding: 20px;">
-    <h2 style="color:var(--purple);">Admin Panel</h2>
-    <button class="btn-main" style="background:#444;" onclick="v('adminView', 0); v('dashView', 1);">Dashboard</button>
-    <div id="adminUserList"></div>
-    <div id="adminGameList"></div>
-    <button class="btn-main" style="background:var(--danger); margin-top:20px;" onclick="globalReset()">WIPE ALL DATA</button>
   </div>
 
   <div id="gameView" class="view" style="padding: 0;">
@@ -137,7 +141,7 @@
                 <div style="display:flex; gap:5px; margin-top:15px;"><input type="text" id="newFellaName" placeholder="Mate's Name" style="flex:1; height:45px; font-size:14px; margin:0;"><button style="background:var(--primary); border:none; color:white; padding:0 15px; border-radius:10px; font-weight:bold; height:45px;" onclick="addFella()">ADD FELLA</button></div>
             </div>
             
-            <div id="mapLinkContainer" style="display:flex; gap:10px; margin-top:10px;">
+            <div style="display:flex; gap:10px; margin-top:10px;">
                 <a href="https://www.google.com/maps/search/?api=1&query=Park+MGM+Las+Vegas" target="_blank" class="btn-side" style="background:#ea4335;">🚀 Front 9 Map</a>
                 <a href="https://www.google.com/maps/search/?api=1&query=Wynn+Las+Vegas" target="_blank" class="btn-side" style="background:#fbbc05;">🚀 Back 9 Map</a>
             </div>
@@ -198,6 +202,22 @@
   function loginSuccess() { localStorage.setItem('jk_user', user.name); v('authView', 0); v('dashView', 1); document.getElementById('dashTitle').innerText = `G'day, ${user.name}`; if(user.name === "Admin") document.getElementById('adminBtn').style.display = 'block'; loadDashboard(); }
   function loadDashboard() { db.ref(`users/${user.name}/games`).on('value', snap => { const alist = document.getElementById('activeList'); alist.innerHTML = ''; snap.forEach(g => { const data = g.val(); if(data.status === 'active') alist.innerHTML += `<div style="background:var(--card); padding:15px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;"><span>${data.code}</span><button onclick="enterGame('${data.code}')" style="background:var(--primary); color:#fff; border:none; padding:8px 12px; border-radius:5px;">Resume</button></div>`; }); }); }
   
+  function loadAdmin() {
+    db.ref('users').on('value', s => {
+      const ulist = document.getElementById('adminUserList'); ulist.innerHTML = '';
+      s.forEach(u => { 
+        if(u.key !== "Admin") ulist.innerHTML += `<div class="admin-item"><span>${u.key}</span><button style="background:var(--danger); border:none; color:white; padding:5px 10px; border-radius:5px;" onclick="runDeleteUser('${u.key}')">Delete</button></div>`;
+      });
+    });
+    db.ref('games').on('value', s => {
+      const glist = document.getElementById('adminGameList'); glist.innerHTML = '';
+      s.forEach(g => { glist.innerHTML += `<div class="admin-item"><span>${g.key} (${g.val().status || 'active'})</span><button style="background:var(--danger); border:none; color:white; padding:5px 10px; border-radius:5px;" onclick="runDeleteGame('${g.key}')">Delete</button></div>`; });
+    });
+  }
+  function runDeleteUser(n) { if(confirm(`Delete user ${n}?`)) db.ref('users/' + n).remove(); }
+  function runDeleteGame(c) { if(confirm(`Delete game ${c}?`)) db.ref('games/' + c).remove(); }
+  function globalReset() { if(!confirm("Wipe everything but Admin?")) return; db.ref('games').remove(); db.ref('users').once('value', s => s.forEach(u => { if(u.key !== "Admin") db.ref('users/' + u.key).remove(); })); alert("System Cleared."); }
+
   function enterGame(code) {
     gCode = code; viewTarget = user.name; v('dashView', 0); v('gameView', 1); document.getElementById('roomTag').innerText = gCode;
     db.ref(`games/${gCode}/players/${user.name}`).update({ name: user.name, drinkTotal: 0, gambleTotal: 0, sundryTotal: 0 });
@@ -205,13 +225,11 @@
         const data = snap.val(); if(!data) { exitGame(); return; }
         if(data.host === user.name) document.getElementById('hostPanel').style.display = 'block';
         currentPlayers = Object.values(data.players || {}).sort((a,b) => ((a.drinkTotal||0)+(a.gambleTotal||0)+(a.sundryTotal||0)) - ((b.drinkTotal||0)+(b.gambleTotal||0)+(b.sundryTotal||0)));
-        
         const list = document.getElementById('pList'); list.innerHTML = '';
         currentPlayers.forEach((p, i) => {
           let wall = ''; (p.shameLog || []).forEach(sh => wall += `<span class="shame-tag">+${sh.amt}: ${sh.reason}</span>`);
           list.innerHTML += `<div style="background:var(--card); padding:15px; border-radius:10px; margin-bottom:10px; border-left:6px solid ${p.name===user.name?'var(--primary)':'var(--border)'}"><div style="display:flex; justify-content:space-between;"><span>${i===0?'👑 ':''}${p.name}</span><b>${(p.drinkTotal||0)+(p.gambleTotal||0)+(p.sundryTotal||0)}</b></div>${wall}</div>`;
         });
-
         const head = document.getElementById('tHead'); let headH = '<tr><th>Hole</th>'; currentPlayers.forEach(p => headH += `<th>${p.name}</th>`); head.innerHTML = headH + '</tr>';
         const body = document.getElementById('tBody'); body.innerHTML = '';
         for(let i=0; i<18; i++) {
@@ -220,7 +238,6 @@
             body.innerHTML += rD + '</tr>' + rG + '</tr>';
         }
         let rST = `<tr class="row-sundry-total"><td>TOTAL SUNDRIES</td>`; currentPlayers.forEach(p => rST += `<td>${p.sundryTotal||0}</td>`); body.innerHTML += rST + '</tr>';
-
         const sel = document.getElementById('activeUserSelect'); const prev = sel.value; sel.innerHTML = ''; currentPlayers.forEach(p => sel.innerHTML += `<option value="${p.name}">${p.name === user.name ? 'ME' : p.name}</option>`); sel.value = prev || viewTarget;
         const pSel = document.getElementById('pSelect'); const pPrev = pSel.value; pSel.innerHTML = ''; currentPlayers.forEach(p => pSel.innerHTML += `<option value="${p.name}">${p.name}</option>`); pSel.value = pPrev;
         updateGroupStats();
