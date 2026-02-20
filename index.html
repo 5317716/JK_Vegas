@@ -23,16 +23,18 @@
   #leaderboardDrawer.open { transform: translateY(0); }
   .ldr-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 15px; }
   .table-scroll { width: 100%; overflow-x: auto; margin-top: 15px; background: #000; border-radius: 12px; -webkit-overflow-scrolling: touch; }
-  .row-drink { background: rgba(33, 150, 243, 0.1) !important; color: #90caf9; }
-  .row-gamble { background: rgba(255, 215, 0, 0.08) !important; color: #fff59d; }
-  .row-sundry { background: rgba(142, 68, 173, 0.1) !important; color: #d7bde2; }
+  .row-drink { background: rgba(33, 150, 243, 0.05) !important; color: #90caf9; }
+  .row-gamble { background: rgba(255, 215, 0, 0.05) !important; color: #fff59d; }
+  .row-sundry-total { background: rgba(142, 68, 173, 0.2) !important; color: #d7bde2; font-weight: bold; }
   .detail-box { text-align: left; padding: 15px; border-radius: 10px; margin-top: 10px; font-size: 14px; border: 1px solid var(--border); background: var(--card); line-height: 1.4; }
+  .shame-tag { display: block; font-size: 11px; color: #aaa; margin-top: 4px; padding-left: 10px; border-left: 2px solid var(--purple); }
   .btn-main { background: var(--primary); color: white; border: none; width: 100%; padding: 22px; border-radius: 15px; margin-bottom: 12px; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
   .btn-side { flex: 1; background: #444; color: white; border: none; padding: 18px; border-radius: 12px; font-weight: bold; font-size: 0.9rem; text-align: center; display: flex; align-items: center; justify-content: center; text-decoration: none; }
   input { width: 100%; max-width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #444; background: #222; color: #fff; margin-bottom: 10px; text-align: center; font-size: 1.1rem; }
   .floating-toggle { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 18px 45px; border-radius: 50px; font-weight: bold; box-shadow: 0 8px 20px rgba(0,0,0,0.6); z-index: 1500; border: 2px solid #fff; }
   table { width: 100%; border-collapse: collapse; font-size: 11px; color: white; }
   th, td { border: 1px solid #333; padding: 10px; text-align: center; min-width: 150px; }
+  .admin-item { background: #252525; padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
 </style>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -63,9 +65,21 @@
   <div id="rulesView" class="view" style="padding: 20px;">
     <h2 style="color:var(--primary);">THE RULES & OVERVIEW</h2>
     <button class="btn-main" style="background:#444;" onclick="v('rulesView', 0); v('gameView', 1);">Back to Game</button>
-    <div class="detail-box"><b>🍺 Drink Par:</b> Sips/gulps to finish.<br><b>💵 Gambling Par ($10 Buy-in):</b><br>• Birdie (-1): Profit | • Par (0): Break Even | • Bogey (+1): Loss | • Penalty (+3): Refusal</div>
-    <div class="detail-box" style="border-color:var(--danger);"><b>🚨 SUNDRY PENALTIES (Host Assigned Only):</b><br>• <b>The Curdle (+2):</b> Hesitating on Car Bomb.<br>• <b>The Malt Liquor (+2):</b> Entering Wynn before finishing Colt 45.<br>• <b>Out of Bounds (+3):</b> Vomiting.</div>
+    <div class="detail-box"><b>🍺 Drink Par:</b> Sips/gulps to finish.<br><b>💵 Gambling Par:</b> • Birdie (-1) | • Par (0) | • Bogey (+1) | • Penalty (+3)</div>
+    <div class="detail-box" style="border-color:var(--danger);"><b>🚨 COMMISSIONER PENALTIES:</b><br>• <b>The Curdle (+2):</b> Hesitation.<br>• <b>The Malt Liquor (+2):</b> Slow walking.<br>• <b>Out of Bounds (+3):</b> Vomiting.</div>
+    <h3 style="color:var(--purple); margin-top:25px;">GROUP STATS</h3><div id="statsContent" class="detail-box" style="background:rgba(142,68,173,0.1); border-color:var(--purple);">Loading stats...</div>
     <h3 style="color:var(--primary); margin-top:25px;">COURSE GUIDE</h3><div id="fullCourseList"></div>
+  </div>
+
+  <div id="adminView" class="view" style="padding: 20px;">
+    <h2 style="color:var(--purple);">System Admin Panel</h2>
+    <button class="btn-main" style="background:#444;" onclick="v('adminView', 0); v('dashView', 1);">Dashboard</button>
+    <div style="background: #3d1414; padding: 15px; border-radius: 12px; border: 2px solid var(--danger); margin-bottom: 20px;">
+      <h4 style="margin:0; color:var(--danger);">Nuclear Option</h4>
+      <button class="btn-main" style="background:var(--danger); padding:10px; font-size:14px; margin-top:10px;" onclick="globalReset()">WIPE ALL DATA</button>
+    </div>
+    <h3 style="margin-bottom:10px;">Registered Users</h3><div id="adminUserList"></div>
+    <h3 style="margin-top:20px; margin-bottom:10px;">Created Games</h3><div id="adminGameList"></div>
   </div>
 
   <div id="gameView" class="view" style="padding: 0;">
@@ -83,17 +97,17 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <span>🍺 Drinks</span>
                     <div style="display: flex; align-items: center; background: #2a2a2a; border-radius: 12px; padding: 4px;">
-                        <button style="background: #333; border: none; width: 50px; height: 50px; color: white; border-radius: 10px;" onclick="adj('d',-1)">−</button>
+                        <button style="background: #333; border: none; width: 50px; height: 50px; color: white;" onclick="adj('d',-1)">−</button>
                         <div style="font-size: 1.8rem; width: 60px; text-align: center; color: var(--primary);" id="dDisp">0</div>
-                        <button style="background: #333; border: none; width: 50px; height: 50px; color: white; border-radius: 10px;" onclick="adj('d',1)">+</button>
+                        <button style="background: #333; border: none; width: 50px; height: 50px; color: white;" onclick="adj('d',1)">+</button>
                     </div>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span>🎲 Gambling</span>
                     <div style="display: flex; align-items: center; background: #2a2a2a; border-radius: 12px; padding: 4px;">
-                        <button style="background: #333; border: none; width: 50px; height: 50px; color: white; border-radius: 10px;" onclick="adj('g',-1)">−</button>
+                        <button style="background: #333; border: none; width: 50px; height: 50px; color: white;" onclick="adj('g',-1)">−</button>
                         <div style="font-size: 1.8rem; width: 60px; text-align: center; color: var(--primary);" id="gDisp">0</div>
-                        <button style="background: #333; border: none; width: 50px; height: 50px; color: white; border-radius: 10px;" onclick="adj('g',1)">+</button>
+                        <button style="background: #333; border: none; width: 50px; height: 50px; color: white;" onclick="adj('g',1)">+</button>
                     </div>
                 </div>
             </div>
@@ -104,30 +118,25 @@
             <div id="hostPanel" style="display:none; background:#3d1414; padding:15px; border-radius:12px; border: 2px solid var(--danger); margin-bottom: 15px;">
                 <h3 style="margin-top:0; font-size:12px; color:var(--danger); text-align:center;">🚨 COMMISSIONER PANEL</h3>
                 <select id="pSelect" style="width:100%; padding:15px; margin-bottom:12px; background:#222; color:white; border-radius:10px; border: 1px solid #444; font-size: 16px;"></select>
-                
+                <input type="text" id="sundryReason" placeholder="Reason (e.g. Vomiting)" style="height:50px; font-size:14px; margin-bottom:8px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px;">
-                    <span style="font-size:14px;">Assign ✨ Sundry Strokes:</span>
+                    <span style="font-size:14px;">Strokes:</span>
                     <div style="display: flex; align-items: center; background: #2a2a2a; border-radius: 10px; padding: 2px;">
-                        <button style="background: #333; border: none; width: 40px; height: 40px; color: white; border-radius: 5px;" onclick="adjHostSundry(-1)">−</button>
+                        <button style="background: #333; border: none; width: 40px; height: 40px; color: white;" onclick="adjHostSundry(-1)">−</button>
                         <div style="width: 40px; text-align: center; color: var(--purple); font-weight: bold;" id="hostSundryDisp">0</div>
-                        <button style="background: #333; border: none; width: 40px; height: 40px; color: white; border-radius: 5px;" onclick="adjHostSundry(1)">+</button>
+                        <button style="background: #333; border: none; width: 40px; height: 40px; color: white;" onclick="adjHostSundry(1)">+</button>
                     </div>
                 </div>
-                <button class="btn-main" style="background:var(--purple); padding:12px; font-size:14px;" onclick="applyHostSundry()">Apply Sundries to Fella</button>
-
-                <div style="display:flex; gap:5px; margin-top:20px; border-top:1px solid #522; padding-top:15px;">
-                    <input type="text" id="newFellaName" placeholder="Mate's Name" style="margin-bottom:0; flex:1; font-size:14px; height:45px;">
-                    <button style="background:var(--primary); border:none; color:white; padding:0 15px; border-radius:10px; font-weight:bold; height:45px;" onclick="addFella()">ADD FELLA</button>
-                </div>
-                <button class="btn-main" style="background: #555; font-size: 12px; margin-top: 15px; padding: 10px;" onclick="archiveGame()">🛑 ARCHIVE GAME FOR ALL</button>
+                <button class="btn-main" style="background:var(--purple); padding:12px; font-size:14px;" onclick="applyHostSundry()">Apply Penalty & Reason</button>
+                <h4 style="color:var(--danger); border-top:1px solid #522; padding-top:10px; text-align:center;">MASS PENALTY</h4>
+                <button class="btn-main" style="background:var(--danger); padding:12px; font-size:13px; margin-bottom:8px;" onclick="applyMassPenalty(2, 'Group Slow Walking')">⚠️ EVERYONE: Slow Walking (+2)</button>
+                <button class="btn-main" style="background:#b03a2e; padding:12px; font-size:13px;" onclick="customMassPenalty()">⚠️ EVERYONE: Custom Reason</button>
+                <div style="display:flex; gap:5px; margin-top:15px;"><input type="text" id="newFellaName" placeholder="Mate's Name" style="flex:1; height:45px; font-size:14px; margin:0;"><button style="background:var(--primary); border:none; color:white; padding:0 15px; border-radius:10px; font-weight:bold;" onclick="addFella()">ADD FELLA</button></div>
+                <button class="btn-main" style="background: #555; font-size: 12px; margin-top: 15px; padding: 10px;" onclick="archiveGame()">🛑 ARCHIVE GAME</button>
             </div>
-
             <div style="display:flex; gap:10px;"><a href="https://www.google.com/maps/search/?api=1&query=Park+MGM+Las+Vegas" target="_blank" class="btn-side" style="background:#ea4335;">🚀 Front 9</a><a href="https://www.google.com/maps/search/?api=1&query=Wynn+Las+Vegas" target="_blank" class="btn-side" style="background:#fbbc05;">🚀 Back 9</a></div>
         </div>
-        <div id="leaderboardDrawer">
-            <div class="top-info-bar" style="border-radius: 25px 25px 0 0;"><button class="btn-whatsapp" onclick="copySummary()">WHATSAPP SUMMARY 📊</button><button onclick="toggleLdr(false)" style="background:var(--danger); color:white; border:none; padding:8px 15px; border-radius:12px;">Close</button></div>
-            <div class="ldr-body"><div id="pList"></div><div class="table-scroll"><table><thead id="tHead"></thead><tbody id="tBody"></tbody></table></div></div>
-        </div>
+        <div id="leaderboardDrawer"><div class="top-info-bar" style="border-radius: 25px 25px 0 0;"><button class="btn-whatsapp" onclick="copySummary()">WHATSAPP SUMMARY 📊</button><button onclick="toggleLdr(false)" style="background:var(--danger); color:white; border:none; padding:8px 15px; border-radius:12px;">Close</button></div><div class="ldr-body"><div id="pList"></div><div class="table-scroll"><table><thead id="tHead"></thead><tbody id="tBody"></tbody></table></div></div></div>
         <div class="floating-toggle" onclick="toggleLdr(true)">🏆 SCORES</div>
     </div>
   </div>
@@ -136,7 +145,7 @@
   const firebaseConfig = { apiKey: "AIzaSyARuiRsbkgz25U0kKPqKEYUyhk78VJfgmk", authDomain: "joels-bucks.firebaseapp.com", databaseURL: "https://joels-bucks-default-rtdb.firebaseio.com", projectId: "joels-bucks", storageBucket: "joels-bucks.firebasestorage.app", messagingSenderId: "14159721912", appId: "1:14159721912:web:4dffa0a82be95974e80b4d" };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
-  const course = [{t:"1. BetMGM Bar",l:"Park MGM",p:4,di:"Pint of Lager/IPA",gi:"Roulette: Bet $10 on Red."},{t:"2. Mama Rabbit",l:"Park MGM",p:1,di:"Tequila Shot",gi:"Pokies: Two $5 spins."},{t:"3. The Fairway",l:"Walk to Cosmo",p:5,di:"Margarita Yard Glass",gi:"Coin Flip: $10 Heads/Tails."},{t:"4. Casino Floor",l:"Cosmopolitan",p:3,di:"½ Pint of Beer",gi:"Roulette: Bet $10 on Even."},{t:"5. Chandelier Bar",l:"Cosmopolitan",p:1,di:"Lemon Drop Shot",gi:"Video Poker ($10)."},{t:"6. Lobby Bar",l:"Caesars Palace",p:3,di:"Gin & Tonic",gi:"Baccarat: $10 on Player."},{t:"7. Sportsbook",l:"Caesars Palace",p:3,di:"Bottle of Beer",gi:"Sports: $10 next team score."},{t:"8. Tilted Kilt",l:"The LINQ",p:1,di:"Car Bomb",gi:"Side Bet: $5 decided by Joel."},{t:"9. The Fairway",l:"Walk to Wynn",p:5,di:"Colt 45 / Steel Reserve",gi:"Coin Flip: $10 Heads/Tails."},{t:"10. Wynn",l:"Parasol Down",p:3,di:"Dirty PBR",gi:"High Limit $10. One spin."},{t:"11. Encore",l:"Lobby Bar",p:3,di:"Vodka Redbull",gi:"Roulette: $10 on Black."},{t:"12. Peppermill",l:"Fireside",p:4,di:"Signature Cocktail",gi:"Video Poker at bar ($10)."},{t:"13. Fremont Street",l:"Walking",p:4,di:"Vegas Slushie",gi:"No Gamble: Neon show."},{t:"14. Mega Bar",l:"Circa Resort",p:3,di:"Draft Beer",gi:"Blackjack: Must hit soft 17."},{t:"15. Bar Prohibition",l:"Golden Gate",p:1,di:"Shot of Whiskey",gi:"Craps: $10 on Field."},{t:"16. Casino Floor",l:"Golden Nugget",p:3,di:"Vodka Soda",gi:"Roulette: $10 single number."},{t:"17. Claude's Bar",l:"Golden Nugget",p:4,di:"Old Fashioned",gi:"3-reel machine ($10)."},{t:"18. Binion's",l:"Clubhouse",p:4,di:"Final Pint",gi:"FINALE: Roulette."}];
+  const course = [{t:"1. BetMGM Bar",l:"Park MGM",p:4,di:"Pint of Lager/IPA",gi:"Red Roulette."},{t:"2. Mama Rabbit",l:"Park MGM",p:1,di:"Tequila Shot",gi:"$10 Pokies."},{t:"3. The Fairway",l:"Walk to Cosmo",p:5,di:"Margarita Yard",gi:"Coin Flip."},{t:"4. Casino Floor",l:"Cosmo",p:3,di:"½ Pint",gi:"Even Roulette."},{t:"5. Chandelier Bar",l:"Cosmo",p:1,di:"Lemon Drop",gi:"Video Poker win/bust."},{t:"6. Lobby Bar",l:"Caesars",p:3,di:"G&T",gi:"$10 Player Baccarat."},{t:"7. Sportsbook",l:"Caesars",p:3,di:"Bottle",gi:"$10 next score."},{t:"8. Tilted Kilt",l:"LINQ",p:1,di:"Car Bomb",gi:"$5 Side Bet."},{t:"9. The Fairway",l:"Walk to Wynn",p:5,di:"Colt 45",gi:"Coin Flip."},{t:"10. Wynn",l:"Parasol Down",p:3,di:"Dirty PBR",gi:"$10 High Limit spin."},{t:"11. Encore",l:"Lobby Bar",p:3,di:"Vodka Redbull",gi:"Black Roulette."},{t:"12. Peppermill",l:"Fireside",p:4,di:"Signature",gi:"$10 Video Poker."},{t:"13. Fremont St",l:"Walking",p:4,di:"Slushie",gi:"Neon Show."},{t:"14. Mega Bar",l:"Circa",p:3,di:"Draft",gi:"Blackjack (Hit soft 17)."},{t:"15. Bar Prohibition",l:"Golden Gate",p:1,di:"Whiskey",gi:"$10 Field Craps."},{t:"16. Casino Floor",l:"Golden Nugget",p:3,di:"Vodka Soda",gi:"Single Number Roulette."},{t:"17. Claude's Bar",l:"Golden Nugget",p:4,di:"Old Fashioned",gi:"$10 3-reel machine."},{t:"18. Binion's",l:"Clubhouse",p:4,di:"Final Pint",gi:"FINALE Roulette."}];
   let user = null, gCode = null, cIdx = 0, currentPlayers = [], viewTarget = null, hSundry = 0;
 
   function handleAuth() {
@@ -149,6 +158,23 @@
   }
   function loginSuccess() { localStorage.setItem('jk_user', user.name); v('authView', 0); v('dashView', 1); document.getElementById('dashTitle').innerText = `G'day, ${user.name}`; if(user.name === "Admin") document.getElementById('adminBtn').style.display = 'block'; loadDashboard(); }
   function loadDashboard() { db.ref(`users/${user.name}/games`).on('value', snap => { const alist = document.getElementById('activeList'), hlist = document.getElementById('historyList'); alist.innerHTML = ''; hlist.innerHTML = ''; snap.forEach(g => { const data = g.val(); const item = `<div style="background:var(--card); padding:15px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;"><span>${data.code}</span><button onclick="enterGame('${data.code}')" style="background:var(--primary); color:#fff; border:none; padding:8px 12px; border-radius:5px;">Resume</button></div>`; if(data.status === 'active') alist.innerHTML += item; else hlist.innerHTML += item; }); }); }
+  
+  function loadAdmin() {
+    db.ref('users').on('value', s => {
+      const ulist = document.getElementById('adminUserList'); ulist.innerHTML = '';
+      s.forEach(u => { 
+        if(u.key !== "Admin") ulist.innerHTML += `<div class="admin-item"><span>${u.key}</span><button style="background:var(--danger); border:none; color:white; padding:5px 10px; border-radius:5px;" onclick="runDeleteUser('${u.key}')">Delete</button></div>`;
+      });
+    });
+    db.ref('games').on('value', s => {
+      const glist = document.getElementById('adminGameList'); glist.innerHTML = '';
+      s.forEach(g => { glist.innerHTML += `<div class="admin-item"><span>${g.key} (${g.val().status || 'active'})</span><button style="background:var(--danger); border:none; color:white; padding:5px 10px; border-radius:5px;" onclick="runDeleteGame('${g.key}')">Delete</button></div>`; });
+    });
+  }
+  function runDeleteUser(n) { if(confirm(`Delete user ${n}?`)) db.ref(`users/${n}`).remove(); }
+  function runDeleteGame(c) { if(confirm(`Delete game ${c}?`)) db.ref(`games/${c}`).remove(); }
+  function globalReset() { if(!confirm("Wipe everything but Admin?")) return; db.ref('games').remove(); db.ref('users').once('value', s => s.forEach(u => { if(u.key !== "Admin") db.ref(`users/${u.key}`).remove(); })); alert("System Cleared."); }
+
   function enterGame(code) {
     gCode = code; viewTarget = user.name; v('dashView', 0); v('gameView', 1); document.getElementById('roomTag').innerText = gCode;
     db.ref(`games/${gCode}/players/${user.name}`).update({ name: user.name, drinkTotal: 0, gambleTotal: 0, sundryTotal: 0 });
@@ -157,38 +183,56 @@
         if(data.host === user.name) document.getElementById('hostPanel').style.display = 'block';
         currentPlayers = Object.values(data.players || {}).sort((a,b) => ((a.drinkTotal||0)+(a.gambleTotal||0)+(a.sundryTotal||0)) - ((b.drinkTotal||0)+(b.gambleTotal||0)+(b.sundryTotal||0)));
         const list = document.getElementById('pList'); list.innerHTML = '';
-        currentPlayers.forEach((p, i) => list.innerHTML += `<div style="background:var(--card); padding:15px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; border-left:6px solid ${p.name===user.name?'var(--primary)':'var(--border)'}"><span>${i===0?'👑 ':''}${p.name}</span><b>${(p.drinkTotal||0)+(p.gambleTotal||0)+(p.sundryTotal||0)}</b></div>`);
-        const head = document.getElementById('tHead'); let headH = '<tr><th>Hole</th>'; currentPlayers.forEach(p => headH += `<th>${p.name} (${(p.drinkTotal||0)+(p.gambleTotal||0)+(p.sundryTotal||0)})</th>`); head.innerHTML = headH + '</tr>';
+        currentPlayers.forEach((p, i) => {
+          let wall = ''; (p.shameLog || []).forEach(sh => wall += `<span class="shame-tag">+${sh.amt}: ${sh.reason}</span>`);
+          list.innerHTML += `<div style="background:var(--card); padding:15px; border-radius:10px; margin-bottom:10px; border-left:6px solid ${p.name===user.name?'var(--primary)':'var(--border)'}"><div style="display:flex; justify-content:space-between;"><span>${i===0?'👑 ':''}${p.name}</span><b>${(p.drinkTotal||0)+(p.gambleTotal||0)+(p.sundryTotal||0)}</b></div>${wall}</div>`;
+        });
+        const head = document.getElementById('tHead'); let headH = '<tr><th>Hole</th>'; currentPlayers.forEach(p => headH += `<th>${p.name}</th>`); head.innerHTML = headH + '</tr>';
         const body = document.getElementById('tBody'); body.innerHTML = '';
         for(let i=0; i<18; i++) {
-            let rD = `<tr class="row-drink"><td>Hole ${i+1} Drink</td>`, rG = `<tr class="row-gamble"><td>Hole ${i+1} Gamble</td>`, rS = `<tr class="row-sundry"><td>Hole ${i+1} Sundry</td>`;
-            currentPlayers.forEach(p => { const h = (p.holes && p.holes[i]) ? p.holes[i] : {d:0, g:0, s:0}; rD += `<td>${h.d||0}</td>`; rG += `<td>${h.g||0}</td>`; rS += `<td>${h.s||0}</td>`; });
-            body.innerHTML += rD + '</tr>' + rG + '</tr>' + rS + '</tr>';
+            let rD = `<tr class="row-drink"><td>Hole ${i+1} Drink</td>`, rG = `<tr class="row-gamble"><td>Hole ${i+1} Gamble</td>`;
+            currentPlayers.forEach(p => { const h = (p.holes && p.holes[i]) ? p.holes[i] : {d:0, g:0}; rD += `<td>${h.d||0}</td>`; rG += `<td>${h.g||0}</td>`; });
+            body.innerHTML += rD + '</tr>' + rG + '</tr>';
         }
-        const sel = document.getElementById('activeUserSelect'); const prev = sel.value; sel.innerHTML = ''; currentPlayers.forEach(p => sel.innerHTML += `<option value="${p.name}">${p.name === user.name ? 'Scoring for: ME' : 'Scoring for: ' + p.name}</option>`); sel.value = prev || viewTarget;
+        let rST = `<tr class="row-sundry-total"><td>TOTAL SUNDRIES</td>`; currentPlayers.forEach(p => rST += `<td>${p.sundryTotal||0}</td>`); body.innerHTML += rST + '</tr>';
+        const sel = document.getElementById('activeUserSelect'); const prev = sel.value; sel.innerHTML = ''; currentPlayers.forEach(p => sel.innerHTML += `<option value="${p.name}">${p.name === user.name ? 'ME' : p.name}</option>`); sel.value = prev || viewTarget;
         const pSel = document.getElementById('pSelect'); const pPrev = pSel.value; pSel.innerHTML = ''; currentPlayers.forEach(p => pSel.innerHTML += `<option value="${p.name}">${p.name}</option>`); pSel.value = pPrev;
+        updateGroupStats();
     });
     renderHole();
   }
   function adjHostSundry(a) { hSundry += a; document.getElementById('hostSundryDisp').innerText = hSundry; }
-  function applyHostSundry() { const tId = document.getElementById('pSelect').value; db.ref(`games/${gCode}/players/${tId}`).once('value', s => { const cur = s.val(); db.ref(`games/${gCode}/players/${tId}`).update({ sundryTotal: (cur.sundryTotal || 0) + hSundry, [`holes/${cIdx}/s`]: ((cur.holes && cur.holes[cIdx] ? cur.holes[cIdx].s : 0) || 0) + hSundry }); hSundry = 0; document.getElementById('hostSundryDisp').innerText = 0; alert("Applied!"); }); }
+  function applyHostSundry() { 
+    const tId = document.getElementById('pSelect').value, reason = document.getElementById('sundryReason').value.trim() || "Penalty";
+    db.ref(`games/${gCode}/players/${tId}`).once('value', s => { 
+      const p = s.val(); let log = p.shameLog || []; log.push({amt: hSundry, reason: reason});
+      db.ref(`games/${gCode}/players/${tId}`).update({ sundryTotal: (p.sundryTotal || 0) + hSundry, shameLog: log }); 
+      hSundry = 0; document.getElementById('hostSundryDisp').innerText = 0; document.getElementById('sundryReason').value = '';
+    }); 
+  }
+  function applyMassPenalty(amt, reason) { currentPlayers.forEach(p => { let log = p.shameLog || []; log.push({amt: amt, reason: reason}); db.ref(`games/${gCode}/players/${p.name}`).update({ sundryTotal: (p.sundryTotal || 0) + amt, shameLog: log }); }); }
+  function customMassPenalty() { const r = prompt("Reason?"); if(!r) return; const a = parseInt(prompt("Strokes?")); if(!isNaN(a)) applyMassPenalty(a, r); }
   function switchUser(n) { viewTarget = n; renderHole(); }
   function addFella() { const n = document.getElementById('newFellaName').value.trim(); if(!n) return; db.ref(`games/${gCode}/players/${n}`).set({ name: n, drinkTotal: 0, gambleTotal: 0, sundryTotal: 0 }); document.getElementById('newFellaName').value = ''; }
-  function renderHole() { const h = course[cIdx]; document.getElementById('holeJump').value = cIdx; document.getElementById('holeInfo').innerHTML = `<div style="font-size:1.4rem; color:var(--primary); font-weight:bold;">${h.t}</div><div style="font-size:12px; color:#888;">${h.l}</div><div style="margin-top:10px; font-size:14px; padding:10px; border-radius:8px; background:rgba(33,150,243,0.1); border:1px solid var(--blue);"><b>DRINK:</b> ${h.di} (PAR ${h.p})</div><div style="margin-top:10px; font-size:14px; padding:10px; border-radius:8px; background:rgba(255,215,0,0.1); border:1px solid var(--accent);"><b>GAMBLE:</b> ${h.gi}</div>`; db.ref(`games/${gCode}/players/${viewTarget}/holes/${cIdx}`).once('value', s => { const d = s.val() || {d:0, g:0, s:0}; document.getElementById('dDisp').innerText = d.d || 0; document.getElementById('gDisp').innerText = d.g || 0; }); }
+  function renderHole() { const h = course[cIdx]; document.getElementById('holeJump').value = cIdx; document.getElementById('holeInfo').innerHTML = `<div style="font-size:1.4rem; color:var(--primary); font-weight:bold;">${h.t}</div><div style="font-size:12px; color:#888;">${h.l}</div><div style="margin-top:10px; font-size:14px; padding:10px; border-radius:8px; background:rgba(33,150,243,0.1); border:1px solid var(--blue);"><b>DRINK:</b> ${h.di} (PAR ${h.p})</div><div style="margin-top:10px; font-size:14px; padding:10px; border-radius:8px; background:rgba(255,215,0,0.1); border:1px solid var(--accent);"><b>GAMBLE:</b> ${h.gi}</div>`; db.ref(`games/${gCode}/players/${viewTarget}/holes/${cIdx}`).once('value', s => { const d = s.val() || {d:0, g:0}; document.getElementById('dDisp').innerText = d.d || 0; document.getElementById('gDisp').innerText = d.g || 0; }); }
   function adj(type, amt) {
     const el = document.getElementById(type + 'Disp'); let val = parseInt(el.innerText) + amt; el.innerText = val;
-    db.ref(`games/${gCode}/players/${viewTarget}`).once('value', s => { const p = s.val(), old = (p.holes && p.holes[cIdx]) ? p.holes[cIdx] : {d:0, g:0, s:0}; let up = {}; if(type === 'd') { up['drinkTotal'] = (p.drinkTotal||0)-(old.d||0)+val; up[`holes/${cIdx}/d`] = val; } else { up['gambleTotal'] = (p.gambleTotal||0)-(old.g||0)+val; up[`holes/${cIdx}/g`] = val; } db.ref(`games/${gCode}/players/${viewTarget}`).update(up); });
+    db.ref(`games/${gCode}/players/${viewTarget}`).once('value', s => { const p = s.val(), old = (p.holes && p.holes[cIdx]) ? p.holes[cIdx] : {d:0, g:0}; let up = {}; if(type === 'd') { up['drinkTotal'] = (p.drinkTotal||0)-(old.d||0)+val; up[`holes/${cIdx}/d`] = val; } else { up['gambleTotal'] = (p.gambleTotal||0)-(old.g||0)+val; up[`holes/${cIdx}/g`] = val; } db.ref(`games/${gCode}/players/${viewTarget}`).update(up); });
   }
-  function copySummary() { let summary = `⛳ JK'S BUCKS NIGHT TOTALS (Hole ${cIdx+1}):\n\n`; currentPlayers.forEach((p, i) => { summary += `${i+1}. ${p.name}: ${(p.drinkTotal||0)+(p.gambleTotal||0)+(p.sundryTotal||0)}\n`; }); summary += `\n🔗 Live: https://www.033.eu`; const el = document.createElement('textarea'); el.value = summary; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); alert("WhatsApp Summary Copied!"); }
-  function shareCode() { const text = `Join JK's Bucks Night Room! \nRoom Code: ${gCode} \n\nPlay here: https://www.033.eu`; if (navigator.share) { navigator.share({ title: "JK's Vegas", text: text }); } else { alert("Copy & Share:\n" + text); } }
-  function archiveGame() { if(!confirm("Archive?")) return; db.ref(`games/${gCode}/status`).set('archived'); db.ref(`games/${gCode}/players`).once('value', s => { s.forEach(p => db.ref(`users/${p.key}/games/${gCode}/status`).set('archived')); }); }
+  function updateGroupStats() { if(!currentPlayers.length) return; const totalDrinks = currentPlayers.reduce((sum, p) => sum + (p.drinkTotal || 0), 0); const mvp = [...currentPlayers].sort((a,b) => (b.sundryTotal||0) - (a.sundryTotal||0))[0]; document.getElementById('statsContent').innerHTML = `<b>Group Avg Drink Strokes:</b> ${(totalDrinks / currentPlayers.length).toFixed(1)}<br><b>Sundry King:</b> ${mvp.name} (${mvp.sundryTotal})`; }
+  function copySummary() { let s = `⛳ JK'S BUCKS TOTALS:\n\n`; currentPlayers.forEach((p, i) => s += `${i+1}. ${p.name}: ${(p.drinkTotal||0)+(p.gambleTotal||0)+(p.sundryTotal||0)}\n`); s += `\n🔗 Live: https://www.033.eu`; const el = document.createElement('textarea'); el.value = s; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); alert("Summary Copied!"); }
+  function shareCode() { const text = `Join JK's Bucks Night! \nCode: ${gCode} \n\nPlay: https://www.033.eu`; if (navigator.share) navigator.share({ title: "JK's Vegas", text: text }); else alert("Copy & Share:\n" + text); }
+  function archiveGame() { if(!confirm("Archive?")) return; db.ref(`games/${gCode}/status`).set('archived'); db.ref(`games/${gCode}/players`).once('value', s => s.forEach(p => db.ref(`users/${p.key}/games/${gCode}/status`).set('archived'))); }
   function saveHole() { if(cIdx < 17) { cIdx++; renderHole(); } else alert("Last hole saved!"); }
   function jumpHole(i) { cIdx = parseInt(i); renderHole(); }
   function toggleLdr(open) { document.getElementById('leaderboardDrawer').classList.toggle('open', open); }
   function v(id, s) { document.getElementById(id).style.display = s ? 'flex' : 'none'; }
   function exitGame() { v('gameView', 0); v('dashView', 1); gCode = null; }
   function logout() { localStorage.clear(); location.reload(); }
-  course.forEach((h, i) => { document.getElementById('holeJump').innerHTML += `<option value="${i}">Hole ${i+1}</option>`; document.getElementById('fullCourseList').innerHTML += `<div class="detail-box"><b>Hole ${i+1}: ${h.t}</b> (${h.l})<br>🍺 ${h.di} (Par ${h.p})<br>🎲 ${h.gi}</div>`; });
+  function createGame() { gCode = Math.random().toString(36).substring(2, 6).toUpperCase(); db.ref(`games/${gCode}`).set({ code: gCode, host: user.name, status: 'active' }).then(() => { db.ref(`users/${user.name}/games/${gCode}`).set({code: gCode, status: 'active'}); enterGame(gCode); }); }
+  function joinGame() { const c = document.getElementById('newRoomCode').value.trim().toUpperCase(); db.ref(`games/${c}`).once('value', s => { if(!s.exists()) return alert("Room not found"); db.ref(`users/${user.name}/games/${c}`).set({code: c, status: 'active'}); enterGame(c); }); }
+
+  course.forEach((h, i) => { document.getElementById('holeJump').innerHTML += `<option value="${i}">Hole ${i+1}</option>`; document.getElementById('fullCourseList').innerHTML += `<div class="detail-box"><b>Hole ${i+1}: ${h.t}</b><br>🍺 ${h.di} (Par ${h.p})<br>🎲 ${h.gi}</div>`; });
   const saved = localStorage.getItem('jk_user'); if(saved) db.ref(`users/${saved}`).once('value', s => { if(s.exists()){ user = s.val(); loginSuccess(); } else logout(); });
 </script>
 </body>
