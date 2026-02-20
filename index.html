@@ -19,14 +19,14 @@
   .active-view { display: flex !important; }
 
   .app-container { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
+
   #mainContent { flex: 1; padding: 15px; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 140px; box-sizing: border-box; }
 
   .top-info-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #000; border-bottom: 1px solid #333; flex-shrink: 0; }
   .room-tag { font-family: monospace; font-weight: bold; color: var(--accent); font-size: 18px; }
   .btn-share-top { background: var(--blue); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 12px; }
 
-  .hole-jump-select { width: 100%; padding: 15px; background: #222; color: var(--primary); border: 1px solid #444; border-radius: 10px; font-weight: bold; margin-bottom: 12px; font-size: 16px; text-align-last:center; }
-
+  /* SCROLLABLE DRAWER FIX */
   #leaderboardDrawer { 
     position: absolute; bottom: 0; left: 0; width: 100%; height: 88%; 
     background: #1a1a1a; border-top: 4px solid var(--primary); 
@@ -36,6 +36,23 @@
     box-shadow: 0 -10px 40px rgba(0,0,0,0.9);
   }
   #leaderboardDrawer.open { transform: translateY(0); }
+
+  .ldr-body { 
+    flex: 1; 
+    overflow-y: auto !important; 
+    -webkit-overflow-scrolling: touch; 
+    padding: 15px; 
+    padding-bottom: 50px;
+  }
+
+  .table-scroll { 
+    width: 100%; 
+    overflow-x: auto !important; 
+    margin-top: 15px; 
+    background: #000; 
+    border-radius: 12px;
+    -webkit-overflow-scrolling: touch;
+  }
 
   .hole-header { background: var(--card); padding: 18px; border-radius: 12px; margin-bottom: 12px; border-top: 5px solid var(--primary); text-align: center; }
   .hole-title { font-weight: bold; font-size: 1.5rem; color: var(--primary); }
@@ -58,7 +75,6 @@
 
   .floating-toggle { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 18px 45px; border-radius: 50px; font-weight: bold; box-shadow: 0 8px 20px rgba(0,0,0,0.6); z-index: 1500; border: 2px solid #fff; }
 
-  .table-scroll { width: 100%; overflow-x: auto; margin-top: 15px; background: #000; border-radius: 12px; }
   table { width: 100%; border-collapse: collapse; font-size: 11px; color: white; }
   th, td { border: 1px solid #333; padding: 10px; text-align: center; min-width: 95px; }
   th { background: #222; color: var(--primary); }
@@ -133,8 +149,8 @@
 
             <button class="btn-main" style="background:#444;" onclick="v('rulesView',1)">📜 THE RULES & GUIDE</button>
             <div style="display:flex; gap:10px;">
-                <a href="https://www.google.com/maps/search/?api=1&query=36.1030,-115.1720" target="_blank" class="btn-side" style="background:#ea4335;">🚀 Front 9 GPS</a>
-                <a href="https://www.google.com/maps/search/?api=1&query=36.1691,-115.1430" target="_blank" class="btn-side" style="background:#fbbc05;">🚀 Back 9 GPS</a>
+                <a href="https://maps.google.com/?q=Park+MGM" target="_blank" class="btn-side" style="background:#ea4335;">🚀 Front 9 GPS</a>
+                <a href="https://maps.google.com/?q=Fremont+Street+Experience" target="_blank" class="btn-side" style="background:#fbbc05;">🚀 Back 9 GPS</a>
             </div>
             <button style="background:none; border:none; color:#444; padding: 25px; width:100%; font-size: 12px;" onclick="leave()">Reset Session</button>
         </div>
@@ -262,7 +278,7 @@
   function toggleLdr(open) { document.getElementById('leaderboardDrawer').classList.toggle('open', open); }
   function v(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
   function leave() { if(confirm("Clear session?")) { localStorage.clear(); location.reload(); } }
-  function shareCode() { const text = `Join JK's Bucks Night! Code: ${gCode} \n\nPlay here: https://vegas.yourdomain.com`; if (navigator.share) navigator.share({ title: "JK's Vegas", text: text, url: "https://vegas.yourdomain.com" }); else alert("Code: " + gCode); }
+  function shareCode() { const text = `Join JK's Bucks Night! Code: ${gCode} \n\nPlay here: vegas.yourdomain.com`; if (navigator.share) navigator.share({ title: "JK's Vegas", text: text, url: "https://vegas.yourdomain.com" }); else alert("Code: " + gCode); }
 
   course.forEach((h, i) => document.getElementById('oList').innerHTML += `<div class="detail-box"><b>Hole ${i+1}: ${h.t}</b><p>🍺 ${h.di}<br>🎲 ${h.gi}</p></div>`);
   if(mId && gCode) db.ref(`games/${gCode}/players/${mId}`).once('value', s => { if(s.exists()) start(); else leave(); });
