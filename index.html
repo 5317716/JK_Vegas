@@ -5,8 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>JK’s Bucks Night 2026</title>
 <style>
-  :root { --primary: #4CAF50; --bg: #121212; --card: #1e1e1e; --text: #ffffff; --border: #333; --danger: #f44336; --accent: #FFD700; --blue: #2196F3; }
+  :root { --primary: #4CAF50; --bg: #121212; --card: #1e1e1e; --text: #ffffff; --border: #333; --danger: #f44336; --accent: #FFD700; --blue: #2196F3; --purple: #8e44ad; }
   
+  /* THE FIX: Ensure padding doesn't push elements off-screen */
+  * { box-sizing: border-box; }
+
   html, body { 
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
     background-color: var(--bg); color: var(--text); 
@@ -15,19 +18,24 @@
     font-size: 16px; 
   }
   
-  .view { display: none; height: 100%; width: 100%; position: absolute; top: 0; left: 0; flex-direction: column; background: var(--bg); overflow-y: auto; padding-bottom: 50px; }
+  .view { display: none; height: 100%; width: 100%; position: absolute; top: 0; left: 0; flex-direction: column; background: var(--bg); overflow-y: auto; padding-bottom: 60px; overflow-x: hidden; }
   .active-view { display: flex !important; }
 
   .app-container { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
-  #mainContent { flex: 1; padding: 15px; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 140px; box-sizing: border-box; }
+  #mainContent { flex: 1; padding: 15px; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 140px; }
+
+  /* NAVIGATION & TOP BARS */
+  .top-info-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #000; border-bottom: 1px solid #333; flex-shrink: 0; width: 100%; }
+  .room-tag { font-family: monospace; font-weight: bold; color: var(--accent); font-size: 18px; }
+  
+  .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; width: 100%; padding: 0 5px; }
+  .btn-logout { background: none; border: 1px solid #444; color: #888; padding: 8px 15px; border-radius: 8px; font-size: 14px; white-space: nowrap; }
 
   .hole-jump-select { width: 100%; padding: 15px; background: #222; color: var(--primary); border: 1px solid #444; border-radius: 10px; font-weight: bold; margin-bottom: 12px; font-size: 1.1rem; text-align-last: center; appearance: none; -webkit-appearance: none; }
 
-  .top-info-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #000; border-bottom: 1px solid #333; flex-shrink: 0; }
-  .room-tag { font-family: monospace; font-weight: bold; color: var(--accent); font-size: 18px; }
-  
   .btn-share-top { background: var(--blue); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 12px; margin-right: 5px; }
 
+  /* LEADERBOARD DRAWER */
   #leaderboardDrawer { 
     position: absolute; bottom: 0; left: 0; width: 100%; height: 88%; 
     background: #1a1a1a; border-top: 4px solid var(--primary); 
@@ -38,21 +46,22 @@
   #leaderboardDrawer.open { transform: translateY(0); }
 
   .ldr-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 15px; }
-  .table-scroll { width: 100%; overflow-x: auto; margin-top: 15px; background: #000; border-radius: 12px; }
+  .table-scroll { width: 100%; overflow-x: auto; margin-top: 15px; background: #000; border-radius: 12px; -webkit-overflow-scrolling: touch; }
 
+  /* SCORECARD TABLES */
   .row-drink { background: rgba(33, 150, 243, 0.1) !important; color: #90caf9; }
   .row-gamble { background: rgba(255, 215, 0, 0.08) !important; color: #fff59d; }
 
   .btn-main { background: var(--primary); color: white; border: none; width: 100%; padding: 22px; border-radius: 15px; margin-bottom: 12px; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
   .btn-side { flex: 1; background: #444; color: white; border: none; padding: 18px; border-radius: 12px; font-weight: bold; font-size: 0.9rem; text-align: center; display: flex; align-items: center; justify-content: center; text-decoration: none; }
   
-  input { width: 100%; max-width: 320px; padding: 18px; border-radius: 12px; border: 1px solid #444; background: #222; color: #fff; margin-bottom: 10px; text-align: center; font-size: 1.1rem; }
+  input { width: 100%; max-width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #444; background: #222; color: #fff; margin-bottom: 10px; text-align: center; font-size: 1.1rem; }
   
   .floating-toggle { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 18px 45px; border-radius: 50px; font-weight: bold; box-shadow: 0 8px 20px rgba(0,0,0,0.6); z-index: 1500; border: 2px solid #fff; }
   table { width: 100%; border-collapse: collapse; font-size: 11px; color: white; }
   th, td { border: 1px solid #333; padding: 10px; text-align: center; min-width: 140px; }
 
-  .admin-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
+  .admin-item { background: #252525; padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
 </style>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -68,9 +77,9 @@
   </div>
 
   <div id="dashView" class="view" style="padding: 20px;">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2 id="dashTitle">G'day</h2>
-        <button onclick="logout()" style="background:none; border: 1px solid #444; color: #888; padding: 5px 10px; border-radius: 5px;">Logout</button>
+    <div class="dash-header">
+        <h2 id="dashTitle" style="margin:0;">G'day</h2>
+        <button class="btn-logout" onclick="logout()">Logout 👋</button>
     </div>
     <div id="activeGamesSection">
         <h3 style="color: var(--primary);">Active Games</h3>
@@ -82,13 +91,19 @@
         </div>
     </div>
     <div style="margin-top: 30px;"><h3 style="color: var(--accent);">History</h3><div id="historyList"></div></div>
-    <button id="adminBtn" class="btn-main" style="display:none; background:#8e44ad; margin-top:30px;" onclick="v('dashView', 0); v('adminView', 1); loadAdmin();">⚙️ SYSTEM ADMIN</button>
+    <button id="adminBtn" class="btn-main" style="display:none; background:var(--purple); margin-top:30px;" onclick="v('dashView', 0); v('adminView', 1); loadAdmin();">⚙️ SYSTEM ADMIN</button>
   </div>
 
   <div id="adminView" class="view" style="padding: 20px;">
-    <h2 style="color:#8e44ad;">Admin Panel</h2>
+    <h2 style="color:var(--purple);">Admin Panel</h2>
     <button class="btn-main" style="background:#444;" onclick="v('adminView', 0); v('dashView', 1);">Back to Dashboard</button>
     
+    <div style="background: #3d1414; padding: 15px; border-radius: 12px; border: 2px solid var(--danger); margin-bottom: 20px;">
+      <h4 style="margin:0; color:var(--danger);">Nuclear Option</h4>
+      <p style="font-size:11px; color:#ccc;">Wipes all users (except Admin) and all game data.</p>
+      <button class="btn-main" style="background:var(--danger); padding:10px; font-size:14px;" onclick="globalReset()">WIPE ALL DATA</button>
+    </div>
+
     <h3>All Users</h3>
     <div id="adminUserList"></div>
     
@@ -214,7 +229,7 @@
         alist.innerHTML = ''; hlist.innerHTML = '';
         snap.forEach(g => {
             const data = g.val();
-            const item = `<div style="background:var(--card); padding:15px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between;"><span>${data.code}</span><button onclick="enterGame('${data.code}')" style="background:var(--primary); color:#fff; border:none; padding:8px; border-radius:5px;">Resume</button></div>`;
+            const item = `<div style="background:var(--card); padding:15px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;"><span>${data.code}</span><button onclick="enterGame('${data.code}')" style="background:var(--primary); color:#fff; border:none; padding:8px 12px; border-radius:5px;">Resume</button></div>`;
             if(data.status === 'active') alist.innerHTML += item; else hlist.innerHTML += item;
         });
     });
@@ -224,15 +239,24 @@
     db.ref('users').on('value', s => {
       const ulist = document.getElementById('adminUserList'); ulist.innerHTML = '';
       s.forEach(u => {
-        ulist.innerHTML += `<div class="admin-item"><span>${u.key}</span><button style="background:var(--danger); border:none; color:white; padding:5px; border-radius:5px;" onclick="db.ref('users/${u.key}').remove()">Delete</button></div>`;
+        if(u.key !== "Admin") ulist.innerHTML += `<div class="admin-item"><span>${u.key}</span><button style="background:var(--danger); border:none; color:white; padding:5px 10px; border-radius:5px;" onclick="if(confirm('Delete user ${u.key}?')) db.ref('users/${u.key}').remove()">Delete</button></div>`;
       });
     });
     db.ref('games').on('value', s => {
       const glist = document.getElementById('adminGameList'); glist.innerHTML = '';
       s.forEach(g => {
-        glist.innerHTML += `<div class="admin-item"><span>${g.key} (${g.val().status})</span><button style="background:var(--danger); border:none; color:white; padding:5px; border-radius:5px;" onclick="db.ref('games/${g.key}').remove()">Delete</button></div>`;
+        glist.innerHTML += `<div class="admin-item"><span>${g.key} (${g.val().status})</span><button style="background:var(--danger); border:none; color:white; padding:5px 10px; border-radius:5px;" onclick="if(confirm('Delete game ${g.key}?')) db.ref('games/${g.key}').remove()">Delete</button></div>`;
       });
     });
+  }
+
+  function globalReset() {
+    if(!confirm("NUCLEAR OPTION: Wipes everything except your Admin account. Continue?")) return;
+    db.ref('games').remove();
+    db.ref('users').once('value', s => {
+      s.forEach(u => { if(u.key !== "Admin") db.ref(`users/${u.key}`).remove(); });
+    });
+    alert("System Cleared.");
   }
 
   function createGame() {
