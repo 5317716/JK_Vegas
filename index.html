@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>JK’s Bucks Night 2026 - Live</title>
+<title>JK’s Bucks Night 2026 - Account Edition</title>
 <style>
   :root { --primary: #4CAF50; --bg: #121212; --card: #1e1e1e; --text: #ffffff; --border: #333; --danger: #f44336; --accent: #FFD700; --blue: #2196F3; }
   
@@ -15,54 +15,43 @@
     font-size: 16px; 
   }
   
-  .view { display: none; height: 100%; width: 100%; position: absolute; top: 0; left: 0; flex-direction: column; background: var(--bg); }
+  .view { display: none; height: 100%; width: 100%; position: absolute; top: 0; left: 0; flex-direction: column; background: var(--bg); overflow-y: auto; padding-bottom: 50px; }
   .active-view { display: flex !important; }
 
   .app-container { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
-
   #mainContent { flex: 1; padding: 15px; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 140px; box-sizing: border-box; }
 
   .top-info-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #000; border-bottom: 1px solid #333; flex-shrink: 0; }
   .room-tag { font-family: monospace; font-weight: bold; color: var(--accent); font-size: 18px; }
-  .btn-share-top { background: var(--blue); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 12px; }
-
-  .hole-jump-select { width: 100%; padding: 15px; background: #222; color: var(--primary); border: 1px solid #444; border-radius: 10px; font-weight: bold; margin-bottom: 12px; font-size: 16px; text-align-last:center; }
-
+  
   #leaderboardDrawer { 
     position: absolute; bottom: 0; left: 0; width: 100%; height: 88%; 
     background: #1a1a1a; border-top: 4px solid var(--primary); 
     border-top-left-radius: 25px; border-top-right-radius: 25px;
     z-index: 2000; transition: transform 0.4s cubic-bezier(0.1, 0.7, 0.1, 1);
     transform: translateY(105%); display: flex; flex-direction: column;
-    box-shadow: 0 -10px 40px rgba(0,0,0,0.9);
   }
   #leaderboardDrawer.open { transform: translateY(0); }
 
-  .ldr-body { flex: 1; overflow-y: auto !important; -webkit-overflow-scrolling: touch; padding: 15px; padding-bottom: 60px; }
+  .ldr-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 15px; }
+  .table-scroll { width: 100%; overflow-x: auto; margin-top: 15px; background: #000; border-radius: 12px; }
 
-  .table-scroll { width: 100%; overflow-x: auto !important; margin-top: 15px; background: #000; border-radius: 12px; -webkit-overflow-scrolling: touch; }
+  .row-drink { background: rgba(33, 150, 243, 0.1) !important; color: #90caf9; }
+  .row-gamble { background: rgba(255, 215, 0, 0.08) !important; color: #fff59d; }
 
-  .row-drink { background: rgba(33, 150, 243, 0.15) !important; color: #90caf9; }
-  .row-gamble { background: rgba(255, 215, 0, 0.1) !important; color: #fff59d; }
-
-  .player-row { background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; border-left: 6px solid var(--border); font-size: 1rem; }
+  .player-row { background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; border-left: 6px solid var(--border); }
   .player-row.is-me { border-left-color: var(--primary); background: #1a2a1a; }
 
-  .btn-math { background: #333; color: white; border: none; width: 65px; height: 65px; font-size: 30px; font-weight: bold; cursor: pointer; border-radius: 12px; }
-  .score-display { font-size: 2rem; font-weight: bold; width: 65px; text-align: center; color: var(--primary); }
-
   .btn-main { background: var(--primary); color: white; border: none; width: 100%; padding: 22px; border-radius: 15px; margin-bottom: 12px; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
-  .btn-side { flex: 1; background: #444; color: white; border: none; padding: 18px; border-radius: 12px; font-weight: bold; font-size: 0.9rem; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; }
+  .btn-side { flex: 1; background: #444; color: white; border: none; padding: 18px; border-radius: 12px; font-weight: bold; font-size: 0.9rem; text-align: center; display: flex; align-items: center; justify-content: center; text-decoration: none; }
   
-  input { width: 100%; max-width: 320px; padding: 22px; border-radius: 15px; border: 1px solid #444; background: #222; color: #fff; margin-bottom: 15px; text-align: center; font-size: 1.4rem; text-transform: uppercase;}
+  input { width: 100%; max-width: 320px; padding: 18px; border-radius: 12px; border: 1px solid #444; background: #222; color: #fff; margin-bottom: 10px; text-align: center; font-size: 1.1rem; }
+  
+  .history-item { background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
 
   .floating-toggle { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 18px 45px; border-radius: 50px; font-weight: bold; box-shadow: 0 8px 20px rgba(0,0,0,0.6); z-index: 1500; border: 2px solid #fff; }
-
   table { width: 100%; border-collapse: collapse; font-size: 11px; color: white; }
-  th, td { border: 1px solid #333; padding: 10px; text-align: center; min-width: 130px; }
-  th { background: #222; color: var(--primary); font-weight: bold; }
-
-  #hostPanel { display:none; background:#3d1414; padding:15px; border-radius:12px; border: 2px solid var(--danger); margin-bottom: 15px; }
+  th, td { border: 1px solid #333; padding: 10px; text-align: center; min-width: 120px; }
 </style>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -70,92 +59,87 @@
 </head>
 <body>
 
-  <div id="loginView" class="view active-view" style="justify-content: center; align-items: center; text-align: center; padding: 20px;">
-    <h1 style="color:var(--primary); font-size: 2rem; margin-bottom: 30px;">⛳ JK’S BUCKS NIGHT 2026</h1>
-    <input type="text" id="uName" placeholder="Your Name">
-    <input type="text" id="rCode" placeholder="Room Code" maxlength="4">
-    <button class="btn-main" onclick="auth(true)">👑 Host New Game</button>
-    <button class="btn-main" style="background:#333;" onclick="auth(false)">🍻 Join Game</button>
+  <div id="authView" class="view active-view" style="justify-content: center; align-items: center; text-align: center; padding: 20px;">
+    <h1 style="color:var(--primary); font-size: 2rem; margin-bottom: 30px;">⛳ JK’S BUCKS 2026</h1>
+    <input type="text" id="logUser" placeholder="Username (Case Sensitive)">
+    <input type="password" id="logPass" placeholder="Password">
+    <button class="btn-main" onclick="handleAuth()">Login / Create Account</button>
+    <p style="font-size: 12px; color: #888;">If username doesn't exist, we'll create it.</p>
   </div>
 
-  <div id="appView" class="view">
+  <div id="dashView" class="view" style="padding: 20px; box-sizing: border-box;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 id="dashTitle">G'day</h2>
+        <button onclick="logout()" style="background: none; border: 1px solid #444; color: #888; padding: 5px 10px; border-radius: 5px;">Logout</button>
+    </div>
+    
+    <div id="activeGamesSection" style="margin-top: 20px;">
+        <h3 style="color: var(--primary);">Active Games</h3>
+        <div id="activeList"></div>
+        <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 20px;">
+            <input type="text" id="newRoomCode" placeholder="Enter Room Code" maxlength="4">
+            <button class="btn-main" style="background: var(--blue);" onclick="joinGame()">Join New Room</button>
+            <button class="btn-main" onclick="createGame()">👑 Host New Game</button>
+        </div>
+    </div>
+
+    <div style="margin-top: 30px;">
+        <h3 style="color: var(--accent);">Your History</h3>
+        <div id="historyList"></div>
+    </div>
+  </div>
+
+  <div id="gameView" class="view" style="padding: 0;">
     <div class="app-container">
         <div class="top-info-bar">
             <div>CODE: <span id="roomTag" class="room-tag">----</span></div>
-            <button class="btn-share-top" onclick="shareCode()">INVITE FELLAS 📲</button>
+            <button onclick="exitGame()" style="background: #333; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 12px;">EXIT</button>
         </div>
-
         <div id="mainContent">
             <select id="holeJump" class="hole-jump-select" onchange="jumpHole(this.value)"></select>
-
             <div class="hole-header" id="holeInfo"></div>
-            
-            <div class="scoring-section">
+            <div style="background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <span>🍺 Drink Strokes</span>
-                    <div class="controls-inline">
-                        <button class="btn-math" onclick="adj('d',-1)">−</button>
-                        <div class="score-display" id="dDisp">0</div>
-                        <button class="btn-math" onclick="adj('d',1)">+</button>
+                    <div style="display: flex; align-items: center; background: #2a2a2a; border-radius: 12px; padding: 4px;">
+                        <button style="background: #333; color: white; border: none; width: 60px; height: 60px; font-size: 24px; border-radius: 10px;" onclick="adj('d',-1)">−</button>
+                        <div style="font-size: 2rem; width: 60px; text-align: center; color: var(--primary);" id="dDisp">0</div>
+                        <button style="background: #333; color: white; border: none; width: 60px; height: 60px; font-size: 24px; border-radius: 10px;" onclick="adj('d',1)">+</button>
                     </div>
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span>🎲 Gamble Strokes</span>
-                    <div class="controls-inline">
-                        <button class="btn-math" onclick="adj('g',-1)">−</button>
-                        <div class="score-display" id="gDisp">0</div>
-                        <button class="btn-math" onclick="adj('g',1)">+</button>
+                    <div style="display: flex; align-items: center; background: #2a2a2a; border-radius: 12px; padding: 4px;">
+                        <button style="background: #333; color: white; border: none; width: 60px; height: 60px; font-size: 24px; border-radius: 10px;" onclick="adj('g',-1)">−</button>
+                        <div style="font-size: 2rem; width: 60px; text-align: center; color: var(--primary);" id="gDisp">0</div>
+                        <button style="background: #333; color: white; border: none; width: 60px; height: 60px; font-size: 24px; border-radius: 10px;" onclick="adj('g',1)">+</button>
                     </div>
                 </div>
             </div>
-            
             <button id="saveBtn" class="btn-main" style="background:var(--blue);" onclick="saveHole()">💾 Save Hole Score</button>
-            
-            <div id="hostPanel">
-                <h3 style="margin-top:0; font-size:12px; color:var(--danger); text-align:center;">🚨 HOST PANEL</h3>
-                <select id="pSelect" style="width:100%; padding:15px; margin-bottom:12px; background:#222; color:white; border-radius:10px; border: 1px solid #444; font-size: 16px;"></select>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <span>Penalty Strokes:</span>
-                    <div class="controls-inline">
-                        <button class="btn-math" style="width:50px; height:50px;" onclick="adjHost(-1)">−</button>
-                        <div class="score-display" id="hostVal">0</div>
-                        <button class="btn-math" style="width:50px; height:50px;" onclick="adjHost(1)">+</button>
-                    </div>
-                </div>
-                <button class="btn-main" style="background:var(--danger); padding:15px;" onclick="applyMod()">Apply Strokes</button>
+            <div id="hostPanel" style="display:none; background:#3d1414; padding:15px; border-radius:12px; border: 2px solid var(--danger); margin-bottom: 15px;">
+                <h3 style="margin-top:0; font-size:12px; color:var(--danger); text-align:center;">🚨 HOST CONTROL</h3>
+                <select id="pSelect" style="width:100%; padding:12px; margin-bottom:12px; background:#222; color:white; border-radius:10px;"></select>
+                <button class="btn-main" style="background:var(--danger); font-size: 14px; padding: 15px;" onclick="archiveGame()">🛑 END & ARCHIVE GAME FOR ALL</button>
             </div>
-
-            <button class="btn-main" style="background:#444;" onclick="v('rulesView',1)">📜 THE RULES & GUIDE</button>
             <div style="display:flex; gap:10px;">
-                <a href="https://www.google.com/maps/dir/Park+MGM,+Las+Vegas+Blvd+S,+Las+Vegas,+NV/Cosmopolitan+of+Las+Vegas,+Las+Vegas+Blvd+S,+Las+Vegas,+NV/Caesars+Palace,+Las+Vegas+Blvd+S,+Las+Vegas,+NV/The+LINQ+Hotel,+Las+Vegas+Blvd+S,+Las+Vegas,+NV/Wynn+Las+Vegas,+Las+Vegas+Blvd+S,+Las+Vegas,+NV" target="_blank" class="btn-side" style="background:#ea4335;">🚀 Strip GPS</a>
-                <a href="https://www.google.com/maps/dir/Fremont+Street+Experience,+Fremont+St,+Las+Vegas,+NV/Circa+Resort+%26+Casino,+Fremont+St+Experience,+Las+Vegas,+NV/Golden+Gate+Hotel+%26+Casino,+Fremont+St+Experience,+Las+Vegas,+NV/Golden+Nugget+Las+Vegas+Hotel+%26+Casino,+Fremont+St,+Las+Vegas,+NV/Binion's+Gambling+Hall,+Fremont+St,+Las+Vegas,+NV" target="_blank" class="btn-side" style="background:#fbbc05;">🚀 Fremont GPS</a>
+                <a href="https://www.google.com/maps/dir/Park+MGM,+Las+Vegas+Blvd+S,+Las+Vegas,+NV/The+Cosmopolitan+of+Las+Vegas" target="_blank" class="btn-side" style="background:#ea4335;">🚀 Strip GPS</a>
+                <a href="https://www.google.com/maps/search/Fremont+Street+Experience" target="_blank" class="btn-side" style="background:#fbbc05;">🚀 Fremont GPS</a>
             </div>
-            <button style="background:none; border:none; color:#444; padding: 25px; width:100%; font-size: 12px;" onclick="leave()">Reset Session</button>
         </div>
-
         <div id="leaderboardDrawer">
             <div class="top-info-bar" style="border-radius: 25px 25px 0 0;">
-                <span style="font-weight:bold; color:var(--primary); font-size: 1.2rem;">🏆 LIVE SCORES</span>
-                <button onclick="toggleLdr(false)" style="background:var(--danger); color:white; border:none; padding:10px 20px; border-radius:12px; font-weight:bold;">Close</button>
+                <span style="font-weight:bold; color:var(--primary);">🏆 LIVE SCORES</span>
+                <button onclick="toggleLdr(false)" style="background:var(--danger); color:white; border:none; padding:8px 15px; border-radius:12px;">Close</button>
             </div>
             <div class="ldr-body">
                 <div id="pList"></div>
                 <div class="table-scroll"><table><thead id="tHead"></thead><tbody id="tBody"></tbody></table></div>
             </div>
         </div>
+        <div class="floating-toggle" onclick="toggleLdr(true)">🏆 SCORES</div>
     </div>
   </div>
-
-  <div id="rulesView" class="view" style="justify-content: flex-start; padding: 20px; overflow-y: auto;">
-    <h1 style="color:var(--primary); font-size: 1.8rem;">THE RULES</h1>
-    <button class="btn-main" onclick="v('rulesView',0)">Back to Game</button>
-    <div class="detail-box"><b>🍺 Drink Par:</b> Sips to finish.<br><b>💵 Gambling Par ($10 Buy-in):</b> Birdie (-1): Profit | Par (0): Break Even | Bogey (+1): Loss | Penalty (+3): Refusal</div>
-    <div class="detail-box" style="border-color: var(--danger);"><b>HAZARDS:</b> • <b>The Curdle (+2):</b> Hesitating on Car Bomb. • <b>Vomiting (+3):</b> Out of Bounds.</div>
-    <h2 style="color:var(--primary); margin-top:20px;">COURSE GUIDE</h2>
-    <div id="oList"></div>
-  </div>
-
-  <div class="floating-toggle" onclick="toggleLdr(true)">🏆 SCORES</div>
 
 <script>
   const firebaseConfig = { apiKey: "AIzaSyARuiRsbkgz25U0kKPqKEYUyhk78VJfgmk", authDomain: "joels-bucks.firebaseapp.com", databaseURL: "https://joels-bucks-default-rtdb.firebaseio.com", projectId: "joels-bucks", storageBucket: "joels-bucks.firebasestorage.app", messagingSenderId: "14159721912", appId: "1:14159721912:web:4dffa0a82be95974e80b4d" };
@@ -178,99 +162,146 @@
     { t: "13. Fremont St", l: "Walking", p: 4, di: "Vegas Slushie", gi: "No Gamble: Neon show." },
     { t: "14. Mega Bar", l: "Circa", p: 3, di: "Draft Beer", gi: "Blackjack: Hit soft 17. Can double/split." },
     { t: "15. Bar Prohibition", l: "Golden Gate", p: 1, di: "Shot of Whiskey", gi: "Craps: $10 Field." },
-    { t: "16. Casino Floor", l: "Golden Nugget", p: 3, di: "Vodka Soda", gi: "Roulette: $10 single number." },
-    { t: "17. Claude's Bar", l: "Golden Nugget", p: 4, di: "Old Fashioned", gi: "3-reel machine: Max pull." },
+    { t: "16. Golden Nugget", l: "Casino Floor", p: 3, di: "Vodka Soda", gi: "Roulette: $10 single number." },
+    { t: "17. Golden Nugget", l: "Claude's Bar", p: 4, di: "Old Fashioned", gi: "3-reel machine: Max pull." },
     { t: "18. Binion's", l: "The Clubhouse", p: 4, di: "Final Pint", gi: "FINALE: Roulette. 50% winnings or $20." }
   ];
 
-  let mId = localStorage.getItem('mId'), gCode = localStorage.getItem('gCode'), hId = localStorage.getItem('hId'), cIdx = parseInt(localStorage.getItem('cIdx')) || 0;
+  let user = null, gCode = null, cIdx = 0;
 
-  function auth(isHost) {
-    const name = document.getElementById('uName').value.trim();
-    if (isHost) { 
-        gCode = Math.random().toString(36).substring(2, 6).toUpperCase(); 
-        const r = db.ref(`games/${gCode}/players`).push(); 
-        mId = r.key; hId = mId; 
-        db.ref(`games/${gCode}`).set({ host: hId }).then(() => {
-            r.set({ id: mId, name: name, drinkTotal: 0, gambleTotal: 0 }).then(start);
-        });
-    } else { 
-        gCode = document.getElementById('rCode').value.trim().toUpperCase(); 
-        db.ref(`games/${gCode}/host`).once('value', s => { 
-            if(!s.exists()) return alert("Room not found!");
-            const r = db.ref(`games/${gCode}/players`).push(); 
-            mId = r.key; hId = s.val();
-            r.set({ id: mId, name: name, drinkTotal: 0, gambleTotal: 0 }).then(start);
-        }); 
-    }
-  }
-
-  function start() {
-    localStorage.setItem('mId', mId); localStorage.setItem('gCode', gCode); localStorage.setItem('hId', hId);
-    document.getElementById('loginView').classList.remove('active-view'); 
-    document.getElementById('appView').classList.add('active-view');
-    document.getElementById('roomTag').innerText = gCode;
-    if (mId === hId) document.getElementById('hostPanel').style.display = 'block';
-    
-    db.ref(`games/${gCode}/players`).on('value', snap => {
-      if(!snap.exists()) return;
-      const allPs = []; 
-      snap.forEach(c => allPs.push(c.val()));
-      
-      // AUTO SORT: BEST (LOWEST) TO WORST (HIGHEST)
-      allPs.sort((a,b) => ((a.drinkTotal||0)+(a.gambleTotal||0)) - ((b.drinkTotal||0)+(b.gambleTotal||0)));
-      
-      const list = document.getElementById('pList'); list.innerHTML = '';
-      allPs.forEach((p, i) => list.innerHTML += `<div class="player-row ${p.id === mId ? 'is-me' : ''}"><span>${i===0?'👑 ':''}${p.name}</span><b>${(p.drinkTotal||0)+(p.gambleTotal||0)}</b></div>`);
-      
-      const head = document.getElementById('tHead'); 
-      let headH = '<tr><th>Hole</th>'; 
-      allPs.forEach(p => headH += `<th>${p.name} (${(p.drinkTotal||0)+(p.gambleTotal||0)})</th>`); 
-      head.innerHTML = headH + '</tr>';
-      
-      const body = document.getElementById('tBody'); body.innerHTML = '';
-      for(let i=0; i<18; i++) {
-          let rD = `<tr class="row-drink"><td>Hole ${i+1} Drinking</td>`, rG = `<tr class="row-gamble"><td>Hole ${i+1} Gambling</td>`;
-          allPs.forEach(p => { const h = (p.holes && p.holes[i]) ? p.holes[i] : {d:0, g:0}; rD += `<td>${h.d||0}</td>`; rG += `<td>${h.g||0}</td>`; });
-          body.innerHTML += rD + '</tr>' + rG + '</tr>';
+  function handleAuth() {
+    const u = document.getElementById('logUser').value.trim();
+    const p = document.getElementById('logPass').value.trim();
+    if(!u || !p) return alert("Enter both fields");
+    db.ref(`users/${u}`).once('value', s => {
+      if(s.exists()) {
+        if(s.val().pass === p) { user = s.val(); loginSuccess(); }
+        else alert("Wrong password");
+      } else {
+        user = { name: u, pass: p, games: {} };
+        db.ref(`users/${u}`).set(user).then(loginSuccess);
       }
-      
-      const sel = document.getElementById('pSelect'); const prev = sel.value; sel.innerHTML = ''; 
-      allPs.forEach(p => sel.innerHTML += `<option value="${p.id}">${p.name}</option>`); 
-      if(prev) sel.value = prev;
     });
-    render();
   }
 
-  function render() {
-    const h = course[cIdx]; document.getElementById('holeJump').value = cIdx;
-    document.getElementById('holeInfo').innerHTML = `<div class="hole-title">${h.t}</div><div style="font-size:12px;color:#888;">${h.l}</div><div class="detail-box drink"><div class="par-badge">PAR ${h.p}</div><b>DRINK:</b> ${h.di}</div><div class="detail-box gamble"><b>GAMBLE:</b> ${h.gi}</div>`;
-    db.ref(`games/${gCode}/players/${mId}/holes/${cIdx}`).once('value', s => { const d = s.val() || {d:0, g:0}; document.getElementById('dDisp').innerText = d.d||0; document.getElementById('gDisp').innerText = d.g||0; });
+  function loginSuccess() {
+    localStorage.setItem('jk_user', user.name);
+    v('authView', 0); v('dashView', 1);
+    document.getElementById('dashTitle').innerText = `G'day, ${user.name}`;
+    loadDashboard();
+  }
+
+  function loadDashboard() {
+    db.ref(`users/${user.name}/games`).on('value', snap => {
+        const alist = document.getElementById('activeList'), hlist = document.getElementById('historyList');
+        alist.innerHTML = ''; hlist.innerHTML = '';
+        snap.forEach(g => {
+            const data = g.val();
+            const item = `<div class="history-item"><span>Room: ${data.code}</span><button onclick="enterGame('${data.code}')" style="padding:10px; border-radius:8px; border:none; background:var(--primary); color:#fff;">Resume</button></div>`;
+            if(data.status === 'active') alist.innerHTML += item;
+            else hlist.innerHTML += `<div class="history-item" style="opacity:0.6;"><span>Room: ${data.code} (Archived)</span></div>`;
+        });
+    });
+  }
+
+  function createGame() {
+    gCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const gameData = { code: gCode, host: user.name, status: 'active', players: {} };
+    db.ref(`games/${gCode}`).set(gameData).then(() => {
+        db.ref(`users/${user.name}/games/${gCode}`).set({code: gCode, status: 'active'});
+        enterGame(gCode);
+    });
+  }
+
+  function joinGame() {
+    const code = document.getElementById('newRoomCode').value.trim().toUpperCase();
+    db.ref(`games/${code}`).once('value', s => {
+        if(!s.exists()) return alert("Room not found");
+        db.ref(`users/${user.name}/games/${code}`).set({code: code, status: 'active'});
+        enterGame(code);
+    });
+  }
+
+  function enterGame(code) {
+    gCode = code;
+    v('dashView', 0); v('gameView', 1);
+    document.getElementById('roomTag').innerText = gCode;
+    
+    // Ensure player is in the game node
+    db.ref(`games/${gCode}/players/${user.name}`).update({ name: user.name, drinkTotal: 0, gambleTotal: 0 });
+    
+    db.ref(`games/${gCode}`).on('value', snap => {
+        const data = snap.val();
+        if(!data || data.status === 'archived') { exitGame(); return alert("Game archived by host."); }
+        if(data.host === user.name) document.getElementById('hostPanel').style.display = 'block';
+        
+        const ps = []; Object.values(data.players || {}).forEach(p => ps.push(p));
+        ps.sort((a,b) => ((a.drinkTotal||0)+(a.gambleTotal||0)) - ((b.drinkTotal||0)+(b.gambleTotal||0)));
+        
+        const list = document.getElementById('pList'); list.innerHTML = '';
+        ps.forEach((p, i) => list.innerHTML += `<div class="player-row ${p.name === user.name ? 'is-me' : ''}"><span>${i===0?'👑 ':''}${p.name}</span><b>${(p.drinkTotal||0)+(p.gambleTotal||0)}</b></div>`);
+        
+        const head = document.getElementById('tHead'); let headH = '<tr><th>Hole</th>';
+        ps.forEach(p => headH += `<th>${p.name} (${(p.drinkTotal||0)+(p.gambleTotal||0)})</th>`);
+        head.innerHTML = headH + '</tr>';
+        
+        const body = document.getElementById('tBody'); body.innerHTML = '';
+        for(let i=0; i<18; i++) {
+            let rD = `<tr class="row-drink"><td>Hole ${i+1} Drink</td>`, rG = `<tr class="row-gamble"><td>Hole ${i+1} Gamble</td>`;
+            ps.forEach(p => { const h = (p.holes && p.holes[i]) ? p.holes[i] : {d:0, g:0}; rD += `<td>${h.d||0}</td>`; rG += `<td>${h.g||0}</td>`; });
+            body.innerHTML += rD + '</tr>' + rG + '</tr>';
+        }
+    });
+    renderHole();
+  }
+
+  function archiveGame() {
+    if(!confirm("Archive this game? Nobody will be able to edit scores.")) return;
+    db.ref(`games/${gCode}/status`).set('archived');
+    // Also update all player's user nodes (Requires a bit more logic for everyone, but for now we mark the game)
+    db.ref(`games/${gCode}/players`).once('value', s => {
+        s.forEach(p => {
+            db.ref(`users/${p.key}/games/${gCode}/status`).set('archived');
+        });
+    });
+  }
+
+  function renderHole() {
+    const h = course[cIdx];
+    document.getElementById('holeJump').value = cIdx;
+    document.getElementById('holeInfo').innerHTML = `<div style="font-size:1.4rem; color:var(--primary); font-weight:bold;">${h.t}</div><div style="font-size:12px; color:#888;">${h.l}</div><div style="margin-top:10px; font-size:14px; padding:10px; border-radius:8px; background:rgba(33,150,243,0.1); border:1px solid var(--blue);"><b>DRINK:</b> ${h.di} (PAR ${h.p})</div><div style="margin-top:10px; font-size:14px; padding:10px; border-radius:8px; background:rgba(255,215,0,0.1); border:1px solid var(--accent);"><b>GAMBLE:</b> ${h.gi}</div>`;
+    db.ref(`games/${gCode}/players/${user.name}/holes/${cIdx}`).once('value', s => {
+        const d = s.val() || {d:0, g:0};
+        document.getElementById('dDisp').innerText = d.d || 0;
+        document.getElementById('gDisp').innerText = d.g || 0;
+    });
   }
 
   function adj(type, amt) {
-    const el = document.getElementById(type + 'Disp'); let val = parseInt(el.innerText) + amt; el.innerText = val;
-    const ref = db.ref(`games/${gCode}/players/${mId}`);
+    const el = document.getElementById(type + 'Disp');
+    let val = parseInt(el.innerText) + amt;
+    el.innerText = val;
+    const ref = db.ref(`games/${gCode}/players/${user.name}`);
     ref.once('value', s => {
-      const p = s.val(), old = (p.holes && p.holes[cIdx]) ? p.holes[cIdx] : {d:0, g:0}; let up = {};
-      if(type === 'd') { up['drinkTotal'] = (p.drinkTotal||0) - (old.d||0) + val; up[`holes/${cIdx}/d`] = val; }
-      else { up['gambleTotal'] = (p.gambleTotal||0) - (old.g||0) + val; up[`holes/${cIdx}/g`] = val; }
-      ref.update(up);
+        const p = s.val(), old = (p.holes && p.holes[cIdx]) ? p.holes[cIdx] : {d:0, g:0};
+        let up = {};
+        if(type === 'd') { up['drinkTotal'] = (p.drinkTotal||0) - (old.d||0) + val; up[`holes/${cIdx}/d`] = val; }
+        else { up['gambleTotal'] = (p.gambleTotal||0) - (old.g||0) + val; up[`holes/${cIdx}/g`] = val; }
+        ref.update(up);
     });
   }
 
-  function adjHost(a) { let el = document.getElementById('hostVal'); el.innerText = parseInt(el.innerText) + a; }
-  function applyMod() { const tId = document.getElementById('pSelect').value; const val = parseInt(document.getElementById('hostVal').innerText); db.ref(`games/${gCode}/players/${tId}`).once('value', s => { db.ref(`games/${gCode}/players/${tId}`).update({ drinkTotal: (s.val().drinkTotal || 0) + val }); document.getElementById('hostVal').innerText = 0; alert("Done!"); }); }
-  function saveHole() { if(cIdx === 17) alert("All 18 Saved!"); else jumpHole(cIdx + 1); }
-  function jumpHole(i) { cIdx = parseInt(i); localStorage.setItem('cIdx', cIdx); render(); }
+  function saveHole() { if(cIdx < 17) { cIdx++; renderHole(); } else alert("Last hole saved!"); }
+  function jumpHole(i) { cIdx = parseInt(i); renderHole(); }
   function toggleLdr(open) { document.getElementById('leaderboardDrawer').classList.toggle('open', open); }
-  function v(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
-  function leave() { if(confirm("Clear session?")) { localStorage.clear(); location.reload(); } }
-  function shareCode() { const text = `Join JK's Bucks Night! Code: ${gCode} \n\nPlay here: https://vegas.033.eu`; if (navigator.share) navigator.share({ title: "JK's Vegas", text: text, url: "https://vegas.033.eu" }); else alert("Code: " + gCode); }
+  function v(id, s) { document.getElementById(id).classList.toggle('active-view', s); }
+  function exitGame() { v('gameView', 0); v('dashView', 1); gCode = null; }
+  function logout() { localStorage.clear(); location.reload(); }
 
-  course.forEach((h, i) => document.getElementById('holeJump').innerHTML += `<option value="${i}">Hole ${i+1} - ${h.t}</option>`);
-  course.forEach((h, i) => document.getElementById('oList').innerHTML += `<div class="detail-box"><b>Hole ${i+1}: ${h.t}</b><p>🍺 ${h.di}<br>🎲 ${h.gi}</p></div>`);
-  if(mId && gCode) db.ref(`games/${gCode}/players/${mId}`).once('value', s => { if(s.exists()) start(); else leave(); });
+  // Init
+  course.forEach((h, i) => document.getElementById('holeJump').innerHTML += `<option value="${i}">Hole ${i+1}</option>`);
+  const saved = localStorage.getItem('jk_user');
+  if(saved) db.ref(`users/${saved}`).once('value', s => { user = s.val(); loginSuccess(); });
 </script>
 </body>
 </html>
