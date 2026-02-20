@@ -72,7 +72,9 @@
   <div id="rulesView" class="view" style="padding: 20px;">
     <h2 style="color:var(--primary);">THE RULES & OVERVIEW</h2>
     <button class="btn-main" style="background:#444;" onclick="v('rulesView', 0); v('gameView', 1);">Back to Game</button>
-    <div id="statsContent" class="detail-box" style="background:rgba(142,68,173,0.1); border-color:var(--purple);">Loading stats...</div>
+    <div class="detail-box"><b>🍺 Drink Par:</b> Sips/gulps to finish.<br><b>💵 Gambling Par:</b> • Birdie (-1) | • Par (0) | • Bogey (+1) | • Penalty (+3)</div>
+    <div class="detail-box" style="border-color:var(--danger);"><b>🚨 COMMISSIONER PENALTIES:</b><br>• <b>The Curdle (+2):</b> Hesitation.<br>• <b>The Malt Liquor (+2):</b> Slow walking.<br>• <b>Out of Bounds (+3):</b> Vomiting.</div>
+    <h3 style="color:var(--purple); margin-top:25px;">GROUP STATS</h3><div id="statsContent" class="detail-box" style="background:rgba(142,68,173,0.1); border-color:var(--purple);">Loading stats...</div>
     <h3 style="color:var(--primary); margin-top:25px;">COURSE GUIDE</h3><div id="fullCourseList"></div>
   </div>
 
@@ -133,10 +135,12 @@
                 <button class="btn-main" style="background:var(--purple); padding:12px; font-size:14px;" onclick="applyHostSundry()">Apply Penalty & Reason</button>
                 <button class="btn-main" style="background:var(--danger); padding:12px; font-size:13px; margin-bottom:8px;" onclick="applyMassPenalty(2, 'Group Slow Walking')">⚠️ EVERYONE: Slow Walking (+2)</button>
                 <div style="display:flex; gap:5px; margin-top:15px;"><input type="text" id="newFellaName" placeholder="Mate's Name" style="flex:1; height:45px; font-size:14px; margin:0;"><button style="background:var(--primary); border:none; color:white; padding:0 15px; border-radius:10px; font-weight:bold; height:45px;" onclick="addFella()">ADD FELLA</button></div>
-                <button class="btn-main" style="background: #555; font-size: 12px; margin-top: 15px; padding: 10px;" onclick="archiveGame()">🛑 ARCHIVE GAME</button>
             </div>
             
-            <div style="display:flex; gap:10px; margin-top:10px;"><a href="https://www.google.com/maps/dir/Park+MGM,+Las+Vegas+Blvd+S,+Las+Vegas,+NV/The+Chandelier,+Las+Vegas+Blvd+S,+Las+Vegas,+NV/Caesars+Palace,+Las+Vegas+Blvd+S,+Las+Vegas,+NV" target="_blank" class="btn-side" style="background:#ea4335;">🚀 Front 9 Map</a><a href="https://www.google.com/maps/dir/Wynn+Las+Vegas/Peppermill+Restaurant/Fremont+Street+Experience/Circa+Resort+%26+Casino" target="_blank" class="btn-side" style="background:#fbbc05;">🚀 Back 9 Map</a></div>
+            <div id="mapLinkContainer" style="display:flex; gap:10px; margin-top:10px;">
+                <a href="https://www.google.com/maps/search/?api=1&query=Park+MGM+Las+Vegas" target="_blank" class="btn-side" style="background:#ea4335;">🚀 Front 9 Map</a>
+                <a href="https://www.google.com/maps/search/?api=1&query=Wynn+Las+Vegas" target="_blank" class="btn-side" style="background:#fbbc05;">🚀 Back 9 Map</a>
+            </div>
         </div>
 
         <div id="leaderboardDrawer">
@@ -147,10 +151,7 @@
           <div class="ldr-body">
             <div id="pList"></div>
             <div class="table-scroll">
-              <table id="fullScorecard">
-                <thead id="tHead"></thead>
-                <tbody id="tBody"></tbody>
-              </table>
+              <table><thead id="tHead"></thead><tbody id="tBody"></tbody></table>
             </div>
           </div>
         </div>
@@ -162,7 +163,28 @@
   const firebaseConfig = { apiKey: "AIzaSyARuiRsbkgz25U0kKPqKEYUyhk78VJfgmk", authDomain: "joels-bucks.firebaseapp.com", databaseURL: "https://joels-bucks-default-rtdb.firebaseio.com", projectId: "joels-bucks", storageBucket: "joels-bucks.firebasestorage.app", messagingSenderId: "14159721912", appId: "1:14159721912:web:4dffa0a82be95974e80b4d" };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
-  const course = [{t:"1. BetMGM Bar",l:"Park MGM",p:4,di:"Pint of Lager/IPA",gi:"Red Roulette."},{t:"2. Mama Rabbit",l:"Park MGM",p:1,di:"Tequila Shot",gi:"$10 Pokies."},{t:"3. The Fairway",l:"Walk to Cosmo",p:5,di:"Margarita Yard",gi:"Coin Flip."},{t:"4. Casino Floor",l:"Cosmo",p:3,di:"½ Pint",gi:"Even Roulette."},{t:"5. Chandelier Bar",l:"Cosmo",p:1,di:"Lemon Drop",gi:"Video Poker win/bust."},{t:"6. Lobby Bar",l:"Caesars",p:3,di:"G&T",gi:"$10 Player Baccarat."},{t:"7. Sportsbook",l:"Caesars",p:3,di:"Bottle",gi:"$10 next score."},{t:"8. Tilted Kilt",l:"LINQ",p:1,di:"Car Bomb",gi:"$5 Side Bet."},{t:"9. The Fairway",l:"Walk to Wynn",p:5,di:"Colt 45",gi:"Coin Flip."},{t:"10. Wynn",l:"Parasol Down",p:3,di:"Dirty PBR",gi:"$10 High Limit spin."},{t:"11. Encore",l:"Lobby Bar",p:3,di:"Vodka Redbull",gi:"Black Roulette."},{t:"12. Peppermill",l:"Fireside",p:4,di:"Signature",gi:"$10 Video Poker."},{t:"13. Fremont St",l:"Walking",p:4,di:"Slushie",gi:"Neon Show."},{t:"14. Mega Bar",l:"Circa",p:3,di:"Draft",gi:"Blackjack (Hit soft 17)."},{t:"15. Bar Prohibition",l:"Golden Gate",p:1,di:"Shot of Whiskey",gi:"$10 Field Craps."},{t:"16. Casino Floor",l:"Golden Nugget",p:3,di:"Vodka Soda",gi:"Single Number Roulette."},{t:"17. Claude's Bar",l:"Golden Nugget",p:4,di:"Old Fashioned",gi:"$10 3-reel machine."},{t:"18. Binion's",l:"Clubhouse",p:4,di:"Final Pint",gi:"FINALE Roulette."}];
+  
+  const course = [
+    {t:"1. BetMGM Bar",l:"Park MGM",p:4,di:"Pint of Lager/IPA",gi:"Red Roulette."},
+    {t:"2. Mama Rabbit",l:"Park MGM",p:1,di:"Tequila Shot",gi:"$10 Pokies."},
+    {t:"3. The Fairway",l:"Walk to Cosmo",p:5,di:"Margarita Yard",gi:"Coin Flip."},
+    {t:"4. Casino Floor",l:"Cosmo",p:3,di:"½ Pint",gi:"Even Roulette."},
+    {t:"5. Chandelier Bar",l:"Cosmo",p:1,di:"Lemon Drop",gi:"Video Poker win/bust."},
+    {t:"6. Lobby Bar",l:"Caesars",p:3,di:"G&T",gi:"$10 Player Baccarat."},
+    {t:"7. Sportsbook",l:"Caesars",p:3,di:"Bottle",gi:"$10 next score."},
+    {t:"8. Tilted Kilt",l:"LINQ",p:1,di:"Car Bomb",gi:"$5 Side Bet."},
+    {t:"9. The Fairway",l:"Walk to Wynn",p:5,di:"Colt 45",gi:"Coin Flip."},
+    {t:"10. Wynn",l:"Parasol Down",p:3,di:"Dirty PBR",gi:"$10 High Limit spin."},
+    {t:"11. Encore",l:"Lobby Bar",p:3,di:"Vodka Redbull",gi:"Black Roulette."},
+    {t:"12. Peppermill",l:"Fireside",p:4,di:"Signature",gi:"$10 Video Poker."},
+    {t:"13. Fremont St",l:"Walking",p:4,di:"Slushie",gi:"Neon Show."},
+    {t:"14. Mega Bar",l:"Circa",p:3,di:"Draft",gi:"Blackjack (Hit soft 17)."},
+    {t:"15. Bar Prohibition",l:"Golden Gate",p:1,di:"Shot of Whiskey",gi:"$10 Field Craps."},
+    {t:"16. Casino Floor",l:"Golden Nugget",p:3,di:"Vodka Soda",gi:"Single Number Roulette."},
+    {t:"17. Claude's Bar",l:"Golden Nugget",p:4,di:"Old Fashioned",gi:"$10 3-reel machine."},
+    {t:"18. Binion's",l:"Clubhouse",p:4,di:"Final Pint",gi:"FINALE Roulette."}
+  ];
+
   let user = null, gCode = null, cIdx = 0, currentPlayers = [], viewTarget = null, hSundry = 0;
 
   function handleAuth() {
@@ -174,7 +196,7 @@
     });
   }
   function loginSuccess() { localStorage.setItem('jk_user', user.name); v('authView', 0); v('dashView', 1); document.getElementById('dashTitle').innerText = `G'day, ${user.name}`; if(user.name === "Admin") document.getElementById('adminBtn').style.display = 'block'; loadDashboard(); }
-  function loadDashboard() { db.ref(`users/${user.name}/games`).on('value', snap => { const alist = document.getElementById('activeList'), hlist = document.getElementById('historyList'); alist.innerHTML = ''; hlist.innerHTML = ''; snap.forEach(g => { const data = g.val(); const item = `<div style="background:var(--card); padding:15px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;"><span>${data.code}</span><button onclick="enterGame('${data.code}')" style="background:var(--primary); color:#fff; border:none; padding:8px 12px; border-radius:5px;">Resume</button></div>`; if(data.status === 'active') alist.innerHTML += item; else hlist.innerHTML += item; }); }); }
+  function loadDashboard() { db.ref(`users/${user.name}/games`).on('value', snap => { const alist = document.getElementById('activeList'); alist.innerHTML = ''; snap.forEach(g => { const data = g.val(); if(data.status === 'active') alist.innerHTML += `<div style="background:var(--card); padding:15px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;"><span>${data.code}</span><button onclick="enterGame('${data.code}')" style="background:var(--primary); color:#fff; border:none; padding:8px 12px; border-radius:5px;">Resume</button></div>`; }); }); }
   
   function enterGame(code) {
     gCode = code; viewTarget = user.name; v('dashView', 0); v('gameView', 1); document.getElementById('roomTag').innerText = gCode;
@@ -184,14 +206,12 @@
         if(data.host === user.name) document.getElementById('hostPanel').style.display = 'block';
         currentPlayers = Object.values(data.players || {}).sort((a,b) => ((a.drinkTotal||0)+(a.gambleTotal||0)+(a.sundryTotal||0)) - ((b.drinkTotal||0)+(b.gambleTotal||0)+(b.sundryTotal||0)));
         
-        // Render Scores Drawer
         const list = document.getElementById('pList'); list.innerHTML = '';
         currentPlayers.forEach((p, i) => {
           let wall = ''; (p.shameLog || []).forEach(sh => wall += `<span class="shame-tag">+${sh.amt}: ${sh.reason}</span>`);
           list.innerHTML += `<div style="background:var(--card); padding:15px; border-radius:10px; margin-bottom:10px; border-left:6px solid ${p.name===user.name?'var(--primary)':'var(--border)'}"><div style="display:flex; justify-content:space-between;"><span>${i===0?'👑 ':''}${p.name}</span><b>${(p.drinkTotal||0)+(p.gambleTotal||0)+(p.sundryTotal||0)}</b></div>${wall}</div>`;
         });
 
-        // Render Scorecard Table
         const head = document.getElementById('tHead'); let headH = '<tr><th>Hole</th>'; currentPlayers.forEach(p => headH += `<th>${p.name}</th>`); head.innerHTML = headH + '</tr>';
         const body = document.getElementById('tBody'); body.innerHTML = '';
         for(let i=0; i<18; i++) {
@@ -201,7 +221,6 @@
         }
         let rST = `<tr class="row-sundry-total"><td>TOTAL SUNDRIES</td>`; currentPlayers.forEach(p => rST += `<td>${p.sundryTotal||0}</td>`); body.innerHTML += rST + '</tr>';
 
-        // Update dropdown selectors
         const sel = document.getElementById('activeUserSelect'); const prev = sel.value; sel.innerHTML = ''; currentPlayers.forEach(p => sel.innerHTML += `<option value="${p.name}">${p.name === user.name ? 'ME' : p.name}</option>`); sel.value = prev || viewTarget;
         const pSel = document.getElementById('pSelect'); const pPrev = pSel.value; pSel.innerHTML = ''; currentPlayers.forEach(p => pSel.innerHTML += `<option value="${p.name}">${p.name}</option>`); pSel.value = pPrev;
         updateGroupStats();
